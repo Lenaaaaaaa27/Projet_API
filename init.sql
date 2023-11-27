@@ -1,23 +1,23 @@
-CREATE TABLE UTILISATEUR(
-    id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    role VARCHAR(50)
+CREATE TABLE USER(
+    id serial PRIMARY KEY,
+    role INTEGER
 );
 
-CREATE TABLE APPARTEMENT(
-    id INTEGER PRIMARY KEY NOT NULL,
-    superficie INTEGER,
-    capacite INTEGER,
-    adresse VARCHAR(255),
-    disponibilite BOOLEAN,
-    prix FLOAT,
-    proprietaire INTEGER REFERENCES UTILISATEUR(id) 
+CREATE TABLE APARTMENT(
+    id serial PRIMARY KEY,
+    area INTEGER,
+    capacity INTEGER,
+    address VARCHAR(255),
+    disponibility BOOLEAN,
+    price FLOAT,
+    owner INTEGER REFERENCES USER(id) 
 );
 
 CREATE TABLE RESERVATION(
-    id INTEGER PRIMARY KEY NOT NULL AUTO_INCREMENT,
-    date_debut DATE,
-    date_fin DATE,
-    prix FLOAT,
-    locataire INTEGER REFERENCES UTILISATEUR(id),
-    appartement INTEGER REFERENCES APPARTEMENT(id)
+    id serial PRIMARY KEY,
+    start_date DATE,
+    end_date DATE,
+    price FLOAT,
+    renter INTEGER REFERENCES USER(id),
+    apartment INTEGER REFERENCES APARTMENT(id)
 );
