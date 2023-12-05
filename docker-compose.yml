@@ -31,8 +31,8 @@ services:
       - 5432:5432
     environment:
       - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=todo_db
-      - POSTGRES_USER=todo
+      - POSTGRES_DB=rent_db
+      - POSTGRES_USER=rental
 
   # C'est un outil qui nous servira à gérer la base de donnée avec une interface graphique !
   pgadmin:
