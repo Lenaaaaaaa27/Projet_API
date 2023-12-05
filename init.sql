@@ -1,5 +1,7 @@
 CREATE TABLE USER(
     id serial PRIMARY KEY,
+    mail VARCHAR(255),
+    password TEXT,
     role INTEGER
 );
 
