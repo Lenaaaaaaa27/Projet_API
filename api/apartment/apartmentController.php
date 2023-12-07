@@ -1,6 +1,6 @@
 <?php
 class apartmentController{
-    private service;
+    private $service;
 
     public __construct(){
         $this->service = new apartmentService();

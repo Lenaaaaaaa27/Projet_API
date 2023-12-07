@@ -1,6 +1,6 @@
 <?php
 class apartmentService{
-    private repository;
+    private $repository;
 
     public __construct(){
         $this->repository = new apartmentRepository();

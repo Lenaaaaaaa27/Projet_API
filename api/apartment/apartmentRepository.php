@@ -1,6 +1,6 @@
 <?php
 class apartmentRepository{
-    private db;
+    private $db;
 
     public function __construct(){
         try{
