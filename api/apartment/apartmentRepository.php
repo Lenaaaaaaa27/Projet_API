@@ -37,14 +37,14 @@ class ApartmentRepository{
         return new ApartmentModel($created['id'], $created['address'], $created['area'], $created['owner'], $created['capacity'], $created['price'], $created['disponibility']);
     }
 
-    public function getApartment($id): ApartmentModel{
-        $query = "SELECT 
+    public function getApartmentBy($attribute, $value): ApartmentModel{
+        $query = 'SELECT 
                     address, area,
                     capacity, disponibility,
                     price, owner
-                  FROM APARTMENT WHERE id = $1";
+                  FROM APARTMENT WHERE ' . $attribute . ' = $1';
         
-        $res = $this->query($query, $this->id);
+        $res = $this->query($query, $value);
         $res = pg_fetch_assoc($res);
         if($res == NULL){
             throw new Exception("Apartment not found.");
