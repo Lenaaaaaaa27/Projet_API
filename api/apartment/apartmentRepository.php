@@ -84,8 +84,16 @@ class ApartmentRepository{
 
     }
 
-    public function deleteApartment(): void{
+    public function deleteApartment($id): void{
+        $query = 'DELETE FROM APARTMENTS WHERE id = $1';
+        $res = $this->query($query, $id);
 
+        if(!$res){
+            throw new Exception(pg_last_error());
+        }
+        if(pg_affected_rows($res) == 0){
+            throw new Exception('Apartment ID ' . $id . ' was not found.');
+        }
     }
 }
 ?>
