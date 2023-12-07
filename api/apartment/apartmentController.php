@@ -1,5 +1,5 @@
 <?php
-class apartmentController{
+class ApartmentController{
     private $service;
 
     public __construct(){

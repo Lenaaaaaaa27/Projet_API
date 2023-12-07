@@ -1,5 +1,5 @@
 <?php
-class apartmentService{
+class ApartmentService{
     private $repository;
 
     public __construct(){

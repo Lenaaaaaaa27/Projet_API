@@ -1,5 +1,5 @@
 <?php
-class apartmentModel{
+class ApartmentModel{
     public $area; //In square meters
     public $capacity; //Number of people who can live in the apartment
     public $address;
