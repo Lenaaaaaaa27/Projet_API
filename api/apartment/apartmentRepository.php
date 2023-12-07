@@ -28,7 +28,7 @@ class ApartmentRepository{
 
     public function newApartment(ApartmentModel $apart): ApartmentModel{
         $query = "INSERT INTO APARTMENT (area, capacity, address, disponibility, price, owner) 
-                                VALUES ($1, $2, $3, $4, $5, $6)";
+                                VALUES ($1, $2, $3, $4, $5, $6) RETURNING *";
         $args = [$this->area, $this->capacity, $this->address, $this->disponibility, $this->price, $this->owner];
 
         $res = $this->query($query, $args);
@@ -80,8 +80,34 @@ class ApartmentRepository{
         return getApartmentsBy("disponibility","TRUE");
     }
 
-    public function updateApartment(): ApartmentModel{
+    public function updateApartment($id, ApartmentModel $apart): ApartmentModel{ //May receive an apart like : {id, area, capacity, address, disponibility, price, owner}
+        $query = 'UPDATE APARTMENTS SET ';
 
+        $first = true;
+        $values = [];
+        foreach($apart as $attr => $value){
+            if($value != NULL){
+                if($first){
+                    $query .= ", ";
+                    $first = false;
+                }
+            $values[] = $value;
+            $query .= $attr . '=$' . count($values);
+            }
+        }
+        $query .= ' WHERE id='. $id .'RETURNING *';
+
+        $res = $this->query($query, $values);
+        if(!$res){
+            throw new Exception(pg_last_error($this->db));
+        }
+
+        if(pg_affected_rows($res) == 0){
+            throw new Exception("Apartment not found.");
+        }
+
+        $res = pg_fetch_assoc($res);
+        return new ApartmentModel($res['id'], $res['address'], $res['area'], $res['owner'], $res['capacity'], $res['price'], $res['disponibility']);
     }
 
     public function deleteApartment($id): void{
@@ -89,7 +115,7 @@ class ApartmentRepository{
         $res = $this->query($query, $id);
 
         if(!$res){
-            throw new Exception(pg_last_error());
+            throw new Exception(pg_last_error($this->db));
         }
         if(pg_affected_rows($res) == 0){
             throw new Exception('Apartment ID ' . $id . ' was not found.');
