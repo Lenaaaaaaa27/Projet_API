@@ -38,11 +38,7 @@ class ApartmentRepository{
     }
 
     public function getApartmentBy($attribute, $value): ApartmentModel{
-        $query = 'SELECT 
-                    address, area,
-                    capacity, disponibility,
-                    price, owner
-                  FROM APARTMENT WHERE ' . $attribute . ' = $1';
+        $query = 'SELECT * FROM APARTMENT WHERE ' . $attribute . ' = $1';
         
         $res = $this->query($query, $value);
         $res = pg_fetch_assoc($res);
@@ -54,11 +50,29 @@ class ApartmentRepository{
     }
 
     public function getApartments(): array{
+        $query = 'SELECT * FROM APARTMENT';
 
+        $res = $this->query($query);
+
+        $apartments = [];
+        while($row = pg_fetch_assoc($res)){
+            $apartments[] = new ApartmentModel($row['id'], $row['address'], $row['area'], $row['owner'], $row['capacity'], $row['price'], $row['disponibility'])
+        }
+
+        return $apartments;
     }
 
     public function getFreeApartments(): array{
+        $query = 'SELECT * FROM APARTMENT WHERE disponibility = TRUE';
 
+        $res = $this->query($query);
+
+        $apartments = [];
+        while($row = pg_fetch_assoc($res)){
+            $apartments[] = new ApartmentModel($row['id'], $row['address'], $row['area'], $row['owner'], $row['capacity'], $row['price'], $row['disponibility'])
+        }
+
+        return $apartments;
     }
 
     public function updateApartment(): ApartmentModel{
