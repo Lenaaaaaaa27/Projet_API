@@ -37,16 +37,30 @@ class ApartmentRepository{
         return new ApartmentModel($created['id'], $created['address'], $created['area'], $created['owner'], $created['capacity'], $created['price'], $created['disponibility']);
     }
 
-    public function getApartmentBy($attribute, $value): ApartmentModel{
-        $query = 'SELECT * FROM APARTMENT WHERE ' . $attribute . ' = $1';
-        
-        $res = $this->query($query, $value);
+    public function getApartment($id): ApartmentModel{
+        $query = 'SELECT * FROM APARTMENT WHERE id = $1';
+
+        $res = $this->query($query, $id);
+
         $res = pg_fetch_assoc($res);
         if($res == NULL){
-            throw new Exception("Apartment not found.");
+            throw new Exception("No apartment found");
         }
 
         return new ApartmentModel($res['id'], $res['address'], $res['area'], $res['owner'], $res['capacity'], $res['price'], $res['disponibility']);
+    }
+
+    public function getApartmentsBy($attribute, $value): ApartmentModel{
+        $query = 'SELECT * FROM APARTMENT WHERE ' . $attribute . ' = $1';
+        
+        $res = $this->query($query, $value);
+        
+        $apartments = [];
+        while($row = pg_fetch_assoc($res)){
+            $apartments[] = new ApartmentModel($row['id'], $row['address'], $row['area'], $row['owner'], $row['capacity'], $row['price'], $row['disponibility'])
+        }
+
+        return $apartments;
     }
 
     public function getApartments(): array{
@@ -63,16 +77,7 @@ class ApartmentRepository{
     }
 
     public function getFreeApartments(): array{
-        $query = 'SELECT * FROM APARTMENT WHERE disponibility = TRUE';
-
-        $res = $this->query($query);
-
-        $apartments = [];
-        while($row = pg_fetch_assoc($res)){
-            $apartments[] = new ApartmentModel($row['id'], $row['address'], $row['area'], $row['owner'], $row['capacity'], $row['price'], $row['disponibility'])
-        }
-
-        return $apartments;
+        return getApartmentsBy("disponibility","TRUE");
     }
 
     public function updateApartment(): ApartmentModel{
