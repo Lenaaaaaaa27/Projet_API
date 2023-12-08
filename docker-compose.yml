@@ -1,5 +1,4 @@
 services:
-  # Ensuite, le service de l'API: c'est un API fait avec PHP, qui vous permettra d'assimiler les principes des API Web rapidement en pratiquant.
   api:
     # On utilise une image avec PHP et Apache pour servir l'API.
     build: .
