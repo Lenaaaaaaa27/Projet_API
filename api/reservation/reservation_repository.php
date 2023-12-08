@@ -66,13 +66,17 @@ class ReservationRepository {
             throw new BDDNotFoundException("Reservation not found.");
         }
 
-        return new ReservationModel($row['id'], $row['start_date'], $row['end_date'], $row['price'], $row['renter'], $row['apartment']);
+        return new ReservationModel($reservation['id'], $reservation['start_date'], $reservation['end_date'], $reservation['price'], $reservation['renter'], $reservation['apartment']);
     }
 
-    public function geReservationBy(string $attribute, string $value): mixed {
-        $query = "SELECT * FROM RESERVATION WHERE ".$attribute."=$1";
+    public function getReservationByDate(string $start_date, string $end_date, string $apartment): mixed {
+        $query = "SELECT * FROM RESERVATION WHERE 
+        apartment = :$1 AND 
+        (start_date BETWEEN :$2 AND :$3 OR 
+        end_date BETWEEN :$2 AND :$3 OR
+        (start_date <= :$2 AND end_date >= :$3))";
         
-        $result = $this->query($query, $value);
+        $result = $this->query($query, $apartment, $start_date, $end_date);
 
         return pg_fetch_assoc($result);
     }
@@ -94,15 +98,15 @@ class ReservationRepository {
     public function createReservation(ReservationModel $reservation): ReservationModel {
         $query = "INSERT INTO RESERVATION (start_date,end_date,price,renter,apartment) VALUES ($1,$2,$3,$4,$5) RETURNING id, start_date,end_date,price,renter,apartment";
         
-        $result = $this->query($query, $reservation->start_date
-                                        $reservation->end_date
-                                        $reservation->price 
-                                        $reservation->renter 
-                                        $reservation->apartment
+        $result = $this->query($query, $reservation->start_date,
+                                        $reservation->end_date,
+                                        $reservation->price,
+                                        $reservation->renter,
+                                        $reservation->apartment,
                                     );
 
         $created = pg_fetch_assoc($result);
-        return new ReservationModel($row['id'], $row['start_date'], $row['end_date'], $row['price'], $row['renter'], $row['apartment']);
+        return new ReservationModel($created['id'], $created['start_date'], $created['end_date'], $created['price'], $created['renter'], $created['apartment']);
     }
 
     public function updateReservation(int $id, ReservationModel $reservation): ReservationModel {
@@ -110,12 +114,28 @@ class ReservationRepository {
 
         $query = "UPDATE RESERVATION SET ";
 
-        if (isset($music_object->url)) {
-            $values[] = $music_object->url;
-            $query .= "url = $".sizeof($values);
+        if (isset($reservation->start_date)) {
+            $values[] = $reservation->start_date;
+            $query .= "start_date = $".sizeof($values);
+        }
+        if (isset($reservation->end_date)) {
+            $values[] = $reservation->end_date;
+            $query .= "end_date = $".sizeof($values);
+        }
+        if (isset($reservation->price)) {
+            $values[] = $reservation->price;
+            $query .= "price = $".sizeof($values);
+        }
+        if (isset($reservation->renter)) {
+            $values[] = $reservation->renter;
+            $query .= "renter = $".sizeof($values);
+        }
+        if (isset($reservation->apartment)) {
+            $values[] = $reservation->apartment;
+            $query .= "apartment = $".sizeof($values);
         }
 
-        $query .= " WHERE id = $id RETURNING id, url, created_at;";
+        $query .= " WHERE id = $id RETURNING id, start_date,end_date,price,renter,apartment";
 
         $result = $this->query($query, ...$values);
         if (!$result) {
@@ -128,20 +148,6 @@ class ReservationRepository {
 
         $modified = pg_fetch_assoc($result);
 
-        return new MusicModel($modified['url'], $modified['id'], $modified['created_at']); 
+        return new ReservationModel($modified['id'], $modified['start_date'], $modified['end_date'], $modified['price'], $modified['renter'], $modified['apartment']);
     }
-
-
-
-    function __construct($id = null, $start_date,$end_date, $price, $renter, $apartment) {
-        
-
-        $this->id = $id;
-        $this->start_date = $start_date;
-        $this->end_date = $end_date;
-        $this->price = $price;
-        $this->renter = $renter;
-        $this->apartment = $apartment;
-    }
-
 }
