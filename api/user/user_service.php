@@ -48,7 +48,7 @@ class UserService{
 
         $user = $this->repository->GetUser(intval($body->id));
 
-        if ($user->password != $body->password) {
+        if ($user["password"] != $body->password) {
             throw new FailConnexionAccount("Email is already used !");
         }
 
