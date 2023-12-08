@@ -1,4 +1,4 @@
-CREATE TABLE USER(
+CREATE TABLE "USER"(
     id serial PRIMARY KEY,
     mail VARCHAR(255),
     password TEXT,
@@ -12,7 +12,7 @@ CREATE TABLE APARTMENT(
     address VARCHAR(255),
     disponibility BOOLEAN,
     price FLOAT,
-    owner INTEGER REFERENCES USER(id) 
+    owner INTEGER REFERENCES "USER"(id) 
 );
 
 CREATE TABLE RESERVATION(
@@ -20,6 +20,6 @@ CREATE TABLE RESERVATION(
     start_date DATE,
     end_date DATE,
     price FLOAT,
-    renter INTEGER REFERENCES USER(id),
+    renter INTEGER REFERENCES "USER"(id),
     apartment INTEGER REFERENCES APARTMENT(id)
 );
