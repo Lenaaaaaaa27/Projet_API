@@ -18,7 +18,6 @@ class UserController{
     public function switch_methods(){
 
         switch($this->method) {
-            // Si on a une requête GET, on renvoie la liste des todos ou un todo en particulier
             case 'GET':
                 
                 if (sizeof($this->uri) == 4) {
@@ -51,8 +50,7 @@ class UserController{
                 return $result;
                 break;
     
-            // Si on a une requête PUT, on met à jour un todo
-            /* case 'PATCH':
+            case 'PATCH':
     
                 $body = file_get_contents("php://input");
                 $json = json_decode($body);
@@ -62,16 +60,15 @@ class UserController{
                 }
     
                 try {
-                    $result = $this->todo_service->updateTodos($json);
+                    $result = $this->user_service->UpdateUser($json);
                     exit_with_message("Updated", 200);
                 } catch (HTTPException $e) {
                     exit_with_message($e->getMessage(), $e->getCode());
                 }
 
                 return $result;
-                break; */
+                break;
     
-            // Si on a une requête DELETE, on supprime un todo
             case 'DELETE':
 
                 $body = file_get_contents("php://input");
@@ -90,7 +87,6 @@ class UserController{
                 
                 break;
     
-            // On gère les requêtes OPTIONS pour permettre le CORS
             default:        
                 header("HTTP/1.1 200 OK");
                 exit();

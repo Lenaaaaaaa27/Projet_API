@@ -22,7 +22,9 @@ class UserService{
     function CreateUser(stdClass $body): UserModel {
 
         $salt = "DJSOJQ02ddqodkCSQDzqdzdKOPDKSDkapodkP09D92KC2ie2I";
-        $body->password = $salt . hash('sha256', $body->password);
+
+        $body->password = $body->password . $salt;
+        $body->password = hash('sha256', $body->password);
         
         $users = $this->repository->GetUsers();
 
@@ -32,24 +34,35 @@ class UserService{
             }
         }
         
-        return $this->repository->CreateUser(new UserModel($body->mail, $body->role, NULL, $body->password));
+        return $this->repository->CreateUser(new UserModel($body->mail, $body->password, $body->role, NULL));
     }
 
-/*     function UpdateUser(int $id, stdClass $body): UserModel {
-        return $this->repository->UpdateUser($id, new UserModel($body->url));
-    } */
+    function UpdateUser(stdClass $body): UserModel {
+        $salt = "DJSOJQ02ddqodkCSQDzqdzdKOPDKSDkapodkP09D92KC2ie2I";
+
+        $body->password = $body->password . $salt;
+        $body->password = hash('sha256', $body->password);
+
+        $user = $this->repository->GetUser(intval($body->id));
+
+        if ($user->password != $body->password) {
+            throw new FailConnexionAccount("Mail or/and password is wrong !");
+        }
+
+        return $this->repository->UpdateUser(new UserModel($body->mail, $body->password, $body->role, $body->id));
+    }
 
     function DeleteUser(stdClass $body): void {
 
         $salt = "DJSOJQ02ddqodkCSQDzqdzdKOPDKSDkapodkP09D92KC2ie2I";
-        hash('sha256', $body->password);
 
-        $user["password"] = $salt . $body->password;
+        $body->password = $body->password . $salt;
+        $body->password = hash('sha256', $body->password);
 
         $user = $this->repository->GetUser(intval($body->id));
 
-        if ($user["password"] != $body->password) {
-            throw new FailConnexionAccount("Email is already used !");
+        if ($user->password != $body->password) {
+            throw new FailConnexionAccount("Mail or/and password is wrong !");
         }
 
         $this->repository->DeleteUser($body->id);

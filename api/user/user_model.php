@@ -22,7 +22,7 @@ class UserModel{
      */
     public $role;
 
-    public function __construct($mail, $role, $id = NULL, $password = NULL){
+    public function __construct($mail, $password, $role, $id = NULL){
         $this->id = $id;
         $this->mail = $mail;
         $this->password = $password;

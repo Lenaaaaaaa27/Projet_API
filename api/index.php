@@ -42,7 +42,7 @@ if($uri[2] == 'user')
 
 try{
     exit_with_content($user_controller->switch_methods());
-}catch(EmailAlreadyExist $e){
+}catch(EmailAlreadyExist | FailConnexionAccount $e){
     echo $e->getMessage();
 }
   

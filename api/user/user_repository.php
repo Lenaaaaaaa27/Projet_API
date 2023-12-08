@@ -29,7 +29,7 @@ class UserRepository{
 
         $user = pg_fetch_assoc($result);
 
-        return new UserModel($user["mail"], $user["role"], $user["id"], NULL);
+        return new UserModel($user["mail"], $user["password"], $user["role"], $user["id"]);
     }
 
     public function GetUser(int $id): UserModel{
@@ -41,13 +41,11 @@ class UserRepository{
         }
 
         $user = pg_fetch_assoc($result);
-
-        var_dump($user);
         if ($user == null) {
             throw new NotFoundException("User not found.");
         }
 
-        return new UserModel($user["mail"], $user["role"], $user["id"], NULL);
+        return new UserModel($user["mail"], $user["password"], $user["role"], $user["id"]);
     }
 
     public function GetUsers():array{
@@ -60,15 +58,15 @@ class UserRepository{
         }
 
         while($row = pg_fetch_assoc($query)){
-            $Users[] = new UserModel($row["mail"], $row["role"], $row["id"], NULL);
+            $Users[] = new UserModel($row["mail"], $row["password"], $row["role"], $row["id"]);
         }
 
         return $Users;
     }
 
-/*public function UpdateUser(): UserModel{
-    A FAIRE
-    } */
+    public function UpdateUser(UserModel $body): UserModel{
+        
+    }
 
     public function DeleteUser(int $id){
         $query = pg_prepare($this->connection, "DeleteUser", "DELETE FROM \"USER\" WHERE id = $1");
