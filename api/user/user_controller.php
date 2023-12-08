@@ -23,7 +23,7 @@ class UserController{
                 
                 if (sizeof($this->uri) == 4) {
                     try {
-                       $result = $this->user_service->GetUser($this->uri[3]);
+                       $result = $this->user_service->GetUser(intval($this->uri[3]));
                     } catch (HTTPException $e) {
                         exit_with_message($e->getMessage(), $e->getCode());
                     }
@@ -72,13 +72,17 @@ class UserController{
                 break; */
     
             // Si on a une requête DELETE, on supprime un todo
-       /*      case 'DELETE':
-                if (sizeof($this->uri) < 4) {
+            case 'DELETE':
+
+                $body = file_get_contents("php://input");
+                $json = json_decode($body);
+
+                if (!isset($json)) {
                     exit_with_message("Bad Request", 400);
                 }
     
-                try {
-                    $this->todo_service->DeleteUser($this->uri[3]);
+                try {                    
+                    $this->user_service->DeleteUser($json);
                     exit_with_message("Deleted", 200);
                 } catch (HTTPException $e) {
                     exit_with_message($e->getMessage(), $e->getCode());
@@ -89,7 +93,7 @@ class UserController{
             // On gère les requêtes OPTIONS pour permettre le CORS
             default:        
                 header("HTTP/1.1 200 OK");
-                exit(); */
+                exit();
             
         }
     }

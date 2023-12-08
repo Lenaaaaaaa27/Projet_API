@@ -19,6 +19,7 @@ class UserRepository{
     }
 
     public function CreateUser(UserModel $body): UserModel{
+
         $query = pg_prepare($this->connection, "CreateUser", "INSERT INTO \"USER\" (mail, password, role) VALUES ($1, $2, $3) RETURNING id, mail, password, role");
         $result = pg_execute($this->connection, "CreateUser", [$body->mail, $body->password, $body->role]);
 
@@ -27,8 +28,8 @@ class UserRepository{
         }
 
         $user = pg_fetch_assoc($result);
-        
-        return new UserModel($user["mail"], $user["password"], $user["role"], $user["id"]);
+
+        return new UserModel($user["mail"], $user["role"], $user["id"], NULL);
     }
 
     public function GetUser(int $id): UserModel{
@@ -41,11 +42,12 @@ class UserRepository{
 
         $user = pg_fetch_assoc($result);
 
+        var_dump($user);
         if ($user == null) {
             throw new NotFoundException("User not found.");
         }
 
-        return new UserModel($user["mail"], $user["password"], $user["role"], $user["id"]);
+        return new UserModel($user["mail"], $user["role"], $user["id"], NULL);
     }
 
     public function GetUsers():array{
@@ -58,7 +60,7 @@ class UserRepository{
         }
 
         while($row = pg_fetch_assoc($query)){
-            $Users[] = new UserModel($row["mail"], $row["password"], $row["role"], $row["id"]);
+            $Users[] = new UserModel($row["mail"], $row["role"], $row["id"], NULL);
         }
 
         return $Users;
