@@ -5,12 +5,12 @@ include_once 'user_service.php';
 
 class UserController{
 
-    public $user_service;
+    public $UserService;
     public $uri;
     public $method;
 
     public function __construct($uri, $method){
-        $this->user_service = new UserService;
+        $this->UserService = new UserService;
         $this->uri = $uri;
         $this->method = $method;
     }
@@ -22,12 +22,12 @@ class UserController{
                 
                 if (sizeof($this->uri) == 4) {
                     try {
-                       $result = $this->user_service->GetUser(intval($this->uri[3]));
+                       $result = $this->UserService->GetUser(intval($this->uri[3]));
                     } catch (HTTPException $e) {
                         exit_with_message($e->getMessage(), $e->getCode());
                     }
                 } else{
-                    $result = $this->user_service->GetUsers();
+                    $result = $this->UserService->GetUsers();
                 }
                 
                 return $result;
@@ -42,7 +42,7 @@ class UserController{
                 }
     
                 try {
-                    $result = $this->user_service->CreateUser($json);
+                    $result = $this->UserService->CreateUser($json);
                 } catch (HTTPException $e) {
                     exit_with_message($e->getMessage(), $e->getCode());
                 }
@@ -50,7 +50,7 @@ class UserController{
                 return $result;
                 break;
     
-            case 'PATCH':
+           /*  case 'PATCH':
     
                 $body = file_get_contents("php://input");
                 $json = json_decode($body);
@@ -60,14 +60,14 @@ class UserController{
                 }
     
                 try {
-                    $result = $this->user_service->UpdateUser($json);
+                    $result = $this->UserService->UpdateUser($json);
                     exit_with_message("Updated", 200);
                 } catch (HTTPException $e) {
                     exit_with_message($e->getMessage(), $e->getCode());
                 }
 
                 return $result;
-                break;
+                break; */
     
             case 'DELETE':
 
@@ -79,7 +79,7 @@ class UserController{
                 }
     
                 try {                    
-                    $this->user_service->DeleteUser($json);
+                    $this->UserService->DeleteUser($json);
                     exit_with_message("Deleted", 200);
                 } catch (HTTPException $e) {
                     exit_with_message($e->getMessage(), $e->getCode());

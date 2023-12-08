@@ -37,7 +37,7 @@ class UserService{
         return $this->repository->CreateUser(new UserModel($body->mail, $body->password, $body->role, NULL));
     }
 
-    function UpdateUser(stdClass $body): UserModel {
+/*     function UpdateUser(stdClass $body): UserModel {
         $salt = "DJSOJQ02ddqodkCSQDzqdzdKOPDKSDkapodkP09D92KC2ie2I";
 
         $body->password = $body->password . $salt;
@@ -50,7 +50,7 @@ class UserService{
         }
 
         return $this->repository->UpdateUser(new UserModel($body->mail, $body->password, $body->role, $body->id));
-    }
+    } */
 
     function DeleteUser(stdClass $body): void {
 

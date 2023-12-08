@@ -36,12 +36,12 @@ function exit_with_content($content = null, $code = 200) {
     exit();
 }
 
-$user_controller = new UserController($uri, parse_url($_SERVER['REQUEST_METHOD'], PHP_URL_PATH));
+$UserController = new UserController($uri, parse_url($_SERVER['REQUEST_METHOD'], PHP_URL_PATH));
 
 if($uri[2] == 'user')
 
 try{
-    exit_with_content($user_controller->switch_methods());
+    exit_with_content($UserController->switch_methods());
 }catch(EmailAlreadyExist | FailConnexionAccount $e){
     echo $e->getMessage();
 }

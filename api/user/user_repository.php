@@ -63,10 +63,10 @@ class UserRepository{
 
         return $Users;
     }
-
+/* 
     public function UpdateUser(UserModel $body): UserModel{
         
-    }
+    } */
 
     public function DeleteUser(int $id){
         $query = pg_prepare($this->connection, "DeleteUser", "DELETE FROM \"USER\" WHERE id = $1");
