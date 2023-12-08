@@ -38,11 +38,8 @@ class ApartmentRepository{
     }
 
     public function getApartment($id): ApartmentModel{
-        $query = 'SELECT * FROM APARTMENT WHERE id = $1';
+        $res = getApartmentsBy('id', $id);
 
-        $res = $this->query($query, $id);
-
-        $res = pg_fetch_assoc($res);
         if($res == NULL){
             throw new Exception("No apartment found");
         }
