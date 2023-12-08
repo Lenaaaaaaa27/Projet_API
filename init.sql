@@ -2,7 +2,8 @@ CREATE TABLE USER(
     id serial PRIMARY KEY,
     mail VARCHAR(255),
     password TEXT,
-    role INTEGER
+    role INTEGER,
+    token TEXT
 );
 
 CREATE TABLE APARTMENT(
