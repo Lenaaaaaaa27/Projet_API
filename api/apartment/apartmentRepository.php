@@ -26,7 +26,7 @@ class ApartmentRepository{
         return $res;
     }
 
-    public function newApartment(ApartmentModel $apart): ApartmentModel{
+    public function insertApartment(ApartmentModel $apart): ApartmentModel{
         $query = "INSERT INTO APARTMENT (area, capacity, address, disponibility, price, owner) 
                                 VALUES ($1, $2, $3, $4, $5, $6) RETURNING *";
         $args = [$this->area, $this->capacity, $this->address, $this->disponibility, $this->price, $this->owner];
@@ -35,16 +35,6 @@ class ApartmentRepository{
         $created = pg_fetch_assoc($res);
 
         return new ApartmentModel($created['id'], $created['address'], $created['area'], $created['owner'], $created['capacity'], $created['price'], $created['disponibility']);
-    }
-
-    public function getApartment($id): ApartmentModel{
-        $res = getApartmentsBy('id', $id);
-
-        if($res == NULL){
-            throw new Exception("No apartment found");
-        }
-
-        return new ApartmentModel($res['id'], $res['address'], $res['area'], $res['owner'], $res['capacity'], $res['price'], $res['disponibility']);
     }
 
     public function getApartmentsBy($attribute, $value): ApartmentModel{
@@ -60,6 +50,16 @@ class ApartmentRepository{
         return $apartments;
     }
 
+    public function getApartment($id): ApartmentModel{
+        $res = getApartmentsBy('id', $id);
+
+        if($res == NULL){
+            throw new Exception("No apartment found");
+        }
+
+        return new ApartmentModel($res['id'], $res['address'], $res['area'], $res['owner'], $res['capacity'], $res['price'], $res['disponibility']);
+    }
+
     public function getApartments(): array{
         $query = 'SELECT * FROM APARTMENT';
 
@@ -73,11 +73,7 @@ class ApartmentRepository{
         return $apartments;
     }
 
-    public function getFreeApartments(): array{
-        return getApartmentsBy("disponibility","TRUE");
-    }
-
-    public function updateApartment($id, ApartmentModel $apart): ApartmentModel{ //May receive an apart like : {id, area, capacity, address, disponibility, price, owner}
+    public function updateApartment(ApartmentModel $apart): ApartmentModel{ //May receive an apart like : {id, area, capacity, address, disponibility, price, owner}
         $query = 'UPDATE APARTMENTS SET ';
 
         $first = true;
@@ -92,7 +88,7 @@ class ApartmentRepository{
             $query .= $attr . '=$' . count($values);
             }
         }
-        $query .= ' WHERE id='. $id .'RETURNING *';
+        $query .= ' WHERE id='. $apart->id .'RETURNING *';
 
         $res = $this->query($query, $values);
         if(!$res){
