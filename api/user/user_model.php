@@ -22,11 +22,18 @@ class UserModel{
      */
     public $role;
 
-    public function __construct($mail, $password, $role, $id = NULL){
-        $this->id = $id;
+    /**
+     *  @var string
+     */
+
+    public $token;
+
+    public function __construct($mail, $password, $role, $id = NULL, $token = NULL){
         $this->mail = $mail;
         $this->password = $password;
         $this->role = $role;
+        $this->id = $id;
+        $this->token = $token;
     }
 
     // Au cas où on met les attributs en private

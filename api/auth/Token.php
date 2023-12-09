@@ -1,7 +1,6 @@
 <?php 
 
-require '../vendor/autoload.php';
-require '../user/user_model.php';
+require_once 'vendor/autoload.php';
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 

@@ -29,7 +29,7 @@ class UserRepository{
 
         $user = pg_fetch_assoc($result);
 
-        return new UserModel($user["mail"], $user["password"], $user["role"], $user["id"]);
+        return new UserModel($user["mail"], $user["password"], $user["role"], $user["id"], NULL);
     }
 
     public function GetUser(int $id): UserModel{
@@ -45,7 +45,7 @@ class UserRepository{
             throw new NotFoundException("User not found.");
         }
 
-        return new UserModel($user["mail"], $user["password"], $user["role"], $user["id"]);
+        return new UserModel($user["mail"], $user["password"], $user["role"], $user["id"], $user["token"]);
     }
 
     public function GetUsers():array{
@@ -58,7 +58,7 @@ class UserRepository{
         }
 
         while($row = pg_fetch_assoc($query)){
-            $Users[] = new UserModel($row["mail"], $row["password"], $row["role"], $row["id"]);
+            $Users[] = new UserModel($row["mail"], $row["password"], $row["role"], $row["id"], $row["token"]);
         }
 
         return $Users;
