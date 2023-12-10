@@ -12,7 +12,7 @@ class ApartmentController{
         $this->service = new ApartmentService();
     }
 
-    public function router(Request $req, Response $res): Response{
+    public function dispatch(Request $req, Response $res): void{
         switch($req->getMethod()){
             case 'GET':
                 if($req->getPathAt(3) === 'free')
@@ -20,7 +20,7 @@ class ApartmentController{
                 elseif($req->getPathAt(3) !== '')
                     $res->setContent($this->service->getApartment($req->getPathAt(3)));
                 else
-                    $res = json_encode($this->service->getApartments());
+                    $res->setContent($this->service->getApartments());
                 break;
 
             case 'POST':
@@ -32,7 +32,7 @@ class ApartmentController{
                 if($req->getPathAt(3) === '')
                     throw new BadRequestException('Please provide the ID of the apartment you want to modify.');
 
-                $result = $this->service->modifyApartment($req->getPathAt(3), $res->getBody());
+                $result = $this->service->modifyApartment($req->getPathAt(3), $req->getBody());
                 $res->setContent($result);
                 break;
 
@@ -41,11 +41,9 @@ class ApartmentController{
                     throw new BadRequestException('Please provide the ID of the apartment you want to delete.');
 
                 $this->service->deleteApartment($req->getPathAt(3));
-                $res->setMessage('Successfully deleted Apartment id' . $req->getPathAt(3), 200);
+                $res->setMessage('Successfully deleted Apartment of ID ' . $req->getPathAt(3), 200);
                 break;
         }
-
-        return $res;
     }
 }
 ?>
