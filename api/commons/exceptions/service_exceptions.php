@@ -18,4 +18,10 @@ class EmailAlreadyExist extends ServiceException{
         parent::__construct(message: $message);
     }
 }
+
+class ValidationException extends ServiceException{
+    public function __construct($message = "Wrong data provided") {
+        parent::__construct(message: $message);
+    }
+}
 ?>

@@ -27,7 +27,7 @@ class ApartmentService{
         foreach($tempFlat as $key){
             if($key == "id") continue;
             if(!isset($body->$key))
-                throw new Exception('Impossible creation : ' . $key . ' is needed.');
+                throw new ValidationException('Impossible creation : property ' . $key . ' is not provided.');
 
             $tempFlat->$key = $body->$key;
         }
@@ -43,17 +43,17 @@ class ApartmentService{
 
     public function modifyApartment($id, stdClass $body): ApartmentModel{
         if(empty(get_object_vars($body)))
-            throw new Exception('No change needed.');
+            throw new ValidationException('No change needed.');
 
         if(isset($body->id) && $body->id != $id)
-            throw new Exception('Modify an ID is not possible.');
+            throw new ValidationException('Modify an ID is not possible.');
 
         $tempFlat = new ApartmentModel($id, NULL, NULL, NULL, NULL, NULL, NULL);
 
-        foreach($tempFlat as $key){
+        foreach($body as $key){
             if($key == "id") continue;
             if(!property_exists($tempFlat, $key))
-                throw new Exception('Modifying ' . $key . ' is not possible : Does not exist');
+                throw new ValidationException('Modifying ' . $key . ' is not possible : Does not exist');
 
             $tempFlat->$key = $body->$key;
         }

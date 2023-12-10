@@ -9,21 +9,21 @@ class ApartmentRepository{
         try{
             $this->db = pg_connect("host=database port=5432 dbname=rent_db user=rental password=password");
             if($this->db == NULL)
-                throw new Exception("Could not connect to database");
+                throw new BDDException("Could not connect to database");
         }catch(Exception $e){
-            throw new Exception("Database connection failed :" . $e->getMessage());
+            throw new BDDException("Database connection failed :" . $e->getMessage());
         }
     }
 
     private function query($req, ...$args): PgSql\Result {
         $prepared = pg_prepare($this->db, "", $query);
         if(!$prepared){
-            throw new Exception(pg_last_error($this->db));
+            throw new BDDException(pg_last_error($this->db));
         }
 
         $res = pg_execute($this->db, "", $args);
         if(!$res){
-            throw new Exception(pg_last_error($this->db));
+            throw new BDDException(pg_last_error($this->db));
         }
 
         return $res;
@@ -40,7 +40,11 @@ class ApartmentRepository{
         return new ApartmentModel($created['id'], $created['address'], $created['area'], $created['owner'], $created['capacity'], $created['price'], $created['disponibility']);
     }
 
-    public function getApartmentsBy($attribute, $value): ApartmentModel{
+    /**
+    * @return ApartmentModel[]
+    */
+
+    public function getApartmentsBy($attribute, $value): array{
         $query = 'SELECT * FROM APARTMENT WHERE ' . $attribute . ' = $1';
         
         $res = $this->query($query, $value);
@@ -57,11 +61,15 @@ class ApartmentRepository{
         $res = getApartmentsBy('id', $id);
 
         if($res == NULL){
-            throw new Exception("No apartment found");
+            throw new BDDNotFoundException("Apartment not found");
         }
 
         return new ApartmentModel($res['id'], $res['address'], $res['area'], $res['owner'], $res['capacity'], $res['price'], $res['disponibility']);
     }
+
+    /**
+    * @return ApartmentModel[]
+    */
 
     public function getApartments(): array{
         $query = 'SELECT * FROM APARTMENT';
@@ -95,11 +103,11 @@ class ApartmentRepository{
 
         $res = $this->query($query, $values);
         if(!$res){
-            throw new Exception(pg_last_error($this->db));
+            throw new BDDException(pg_last_error($this->db));
         }
 
         if(pg_affected_rows($res) == 0){
-            throw new Exception("Apartment not found.");
+            throw new BDDNotFoundException("Apartment not found.");
         }
 
         $res = pg_fetch_assoc($res);
@@ -111,10 +119,10 @@ class ApartmentRepository{
         $res = $this->query($query, $id);
 
         if(!$res){
-            throw new Exception(pg_last_error($this->db));
+            throw new BDDException(pg_last_error($this->db));
         }
         if(pg_affected_rows($res) == 0){
-            throw new Exception('Apartment ID ' . $id . ' was not found.');
+            throw new BDDNotFoundException('Apartment ID ' . $id . ' was not found.');
         }
     }
 }

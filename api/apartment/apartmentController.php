@@ -30,7 +30,7 @@ class ApartmentController{
 
             case 'PATCH':
                 if($req->getPathAt(3) === '')
-                    throw new Exception('Please provide the ID of the apartment you want to modify.');
+                    throw new BadRequestException('Please provide the ID of the apartment you want to modify.');
 
                 $result = $this->service->modifyApartment($req->getPathAt(3), $res->getBody());
                 $res->setContent($result);
@@ -38,7 +38,7 @@ class ApartmentController{
 
             case 'DELETE':
                 if($req->getPathAt(3) === '')
-                    throw new Exception('Please provide the ID of the apartment you want to modify.');
+                    throw new BadRequestException('Please provide the ID of the apartment you want to delete.');
 
                 $this->service->deleteApartment($req->getPathAt(3));
                 $res->setMessage('Successfully deleted Apartment id' . $req->getPathAt(3), 200);
