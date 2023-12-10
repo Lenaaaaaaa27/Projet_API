@@ -13,8 +13,16 @@ class FailConnexionAccount extends ServiceException{
     }
 }
 
+//We sould discuss of replacing the two followings by AlreadyExistsException when over
+
 class EmailAlreadyExist extends ServiceException{
     public function __construct($message = "Can't add User because email is already used") {
+        parent::__construct(message: $message);
+    }
+}
+
+class ApartmentAlreadyExists extends ServiceException{
+    public function __construct($message = "Apartment Already exists"){
         parent::__construct(message: $message);
     }
 }

@@ -24,15 +24,19 @@ class ApartmentService{
 
     public function createApartment(stdClass $body): ApartmentModel {
         $tempFlat = new ApartmentModel(NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-        foreach($tempFlat as $key){
+        foreach($tempFlat as $key => $value){
             if($key == "id") continue;
             if(!isset($body->$key))
                 throw new ValidationException('Impossible creation : property ' . $key . ' is not provided.');
 
             $tempFlat->$key = $body->$key;
         }
+        
+        //We check then if this apartment already exists in the database
+        $existing = $this->repository->getApartmentsBy("address", $tempFlat->address);
 
-        //Essayer de vérifier par l'adresse si un appart existe déjà. Faire quand on pourra tester
+        if($existing != NULL)
+            throw new ApartmentAlreadyExists("Apartment with address '$tempFlat->address' already exists.");
 
         return $this->repository->insertApartment($tempFlat);
     }
@@ -50,7 +54,7 @@ class ApartmentService{
 
         $tempFlat = new ApartmentModel($id, NULL, NULL, NULL, NULL, NULL, NULL);
 
-        foreach($body as $key){
+        foreach($body as $key => $value){
             if($key == "id") continue;
             if(!property_exists($tempFlat, $key))
                 throw new ValidationException('Modifying ' . $key . ' is not possible : Does not exist');
