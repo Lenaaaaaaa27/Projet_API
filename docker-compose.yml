@@ -1,15 +1,4 @@
 services:
-  frontend:
-    # On utilise nginx pour Servir ledit site (Image alpine pour la légereté)
-    image: nginx:1.16.0-alpine
-    # On rend le service accessible sur le port 8080 de votre machine
-    ports:
-      - 8085:80
-
-    # Le volume bindé au dessier 'front' permet de modifier le code de 'front' et que ce soit pris en compte immédiatement, pour vous faciliter la vie
-    volumes:
-      - ./front:/usr/share/nginx/html/
-
   # Ensuite, le service de l'API: c'est un API fait avec PHP, qui vous permettra d'assimiler les principes des API Web rapidement en pratiquant.
   api:
     # On utilise une image avec PHP et Apache pour servir l'API.
