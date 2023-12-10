@@ -94,7 +94,6 @@ class ReservationRepository {
         }
     }
 
-
     public function createReservation(ReservationModel $reservation): ReservationModel {
         $query = "INSERT INTO RESERVATION (start_date,end_date,price,renter,apartment) VALUES ($1,$2,$3,$4,$5) RETURNING id, start_date,end_date,price,renter,apartment";
         
@@ -109,7 +108,7 @@ class ReservationRepository {
         return new ReservationModel($created['id'], $created['start_date'], $created['end_date'], $created['price'], $created['renter'], $created['apartment']);
     }
 
-    public function updateReservation(int $id, ReservationModel $reservation): ReservationModel {
+    public function updateReservation(ReservationModel $reservation): ReservationModel {
         $values = [];
 
         $query = "UPDATE RESERVATION SET ";
