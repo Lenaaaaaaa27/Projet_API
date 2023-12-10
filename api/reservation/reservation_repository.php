@@ -1,12 +1,13 @@
 <?php
 include_once 'reservation_model.php';
+include_once 'commons/exceptions/repository_exceptions.php';
 
 class ReservationRepository {
     private $connection = null;
 
     function __construct() {
         try {
-            $this->connection = pg_connect("host=database port=5433 dbname=rent_db user=rental password=password");
+            $this->connection = pg_connect("host=database port=5432 dbname=rent_db user=rental password=password");
             if (  $this->connection == null ) {
                 throw new BDDException("Could not connect to database.");
             }
@@ -18,20 +19,19 @@ class ReservationRepository {
 
     private function query(string $query,string ...$args): PgSql\Result {
         $prepared = pg_prepare($this->connection, "", $query);
- 
+        var_dump(pg_last_error($this->connection));
+        
         if (!$prepared) {
             throw new BDDException(pg_last_error($this->connection));
         }
-
+        
         $result = pg_execute($this->connection, "", $args);
-    
         if (!$result) {
             throw new BDDException(pg_last_error($this->connection));
         }
-
+ 
         return $result;
     }
-
 
      /**
     * @return reservationModel[]
@@ -42,7 +42,7 @@ class ReservationRepository {
 
         $reservations = [];
         while ($row = pg_fetch_assoc($result)) {
-           $reservations[] = new ReservationModel($row['id'], $row['start_date'], $row['end_date'], $row['price'], $row['renter'], $row['apartment']);
+           $reservations[] = new ReservationModel($row['start_date'], $row['end_date'], $row['price'], $row['renter'], $row['apartment'],$row['id']);
         }
 
         return $reservations;
@@ -66,15 +66,15 @@ class ReservationRepository {
             throw new BDDNotFoundException("Reservation not found.");
         }
 
-        return new ReservationModel($reservation['id'], $reservation['start_date'], $reservation['end_date'], $reservation['price'], $reservation['renter'], $reservation['apartment']);
+        return new ReservationModel($reservation['start_date'], $reservation['end_date'], $reservation['price'], $reservation['renter'], $reservation['apartment'],$reservation['id']);
     }
 
     public function getReservationByDate(string $start_date, string $end_date, string $apartment): mixed {
         $query = "SELECT * FROM RESERVATION WHERE 
-        apartment = :$1 AND 
-        (start_date BETWEEN :$2 AND :$3 OR 
-        end_date BETWEEN :$2 AND :$3 OR
-        (start_date <= :$2 AND end_date >= :$3))";
+        apartment = $1 AND 
+        (start_date BETWEEN $2 AND $3 OR 
+        end_date BETWEEN $2 AND $3 OR
+        (start_date <= $2 AND end_date >= $3))";
         
         $result = $this->query($query, $apartment, $start_date, $end_date);
 
@@ -96,19 +96,18 @@ class ReservationRepository {
 
     public function createReservation(ReservationModel $reservation): ReservationModel {
         $query = "INSERT INTO RESERVATION (start_date,end_date,price,renter,apartment) VALUES ($1,$2,$3,$4,$5) RETURNING id, start_date,end_date,price,renter,apartment";
-        
         $result = $this->query($query, $reservation->start_date,
                                         $reservation->end_date,
                                         $reservation->price,
                                         $reservation->renter,
-                                        $reservation->apartment,
+                                        $reservation->apartment
                                     );
 
         $created = pg_fetch_assoc($result);
         return new ReservationModel($created['id'], $created['start_date'], $created['end_date'], $created['price'], $created['renter'], $created['apartment']);
     }
 
-    public function updateReservation(ReservationModel $reservation): ReservationModel {
+    public function updateReservation($id,ReservationModel $reservation): ReservationModel {
         $values = [];
 
         $query = "UPDATE RESERVATION SET ";
@@ -142,7 +141,7 @@ class ReservationRepository {
         }
 
         if (pg_affected_rows($result) == 0) {
-            throw new BDDNotFoundException("Music not found.");
+            throw new BDDNotFoundException("Reservation not found.");
         }
 
         $modified = pg_fetch_assoc($result);

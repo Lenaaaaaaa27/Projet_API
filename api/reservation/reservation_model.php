@@ -17,7 +17,7 @@ class ReservationModel {
     * @param $apartment
     */
     public
-    function __construct($id = null, $start_date, $end_date, $price, $renter, $apartment) {
+    function __construct($start_date, $end_date, $price, $renter, $apartment,$id = null) {
         
 
         $this->id = $id;

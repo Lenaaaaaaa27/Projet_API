@@ -6,7 +6,7 @@ include_once 'reservation_service.php';
 include_once './commons/request.php';
 include_once './commons/response.php';
 
-class MusicsController {
+class ReservationController {
     private $service;    
 
     function __construct() {
@@ -69,6 +69,6 @@ function dispatch(Request $req, Response $res): void {
     }
 
     function patchReservation(int $id, stdClass $body): ReservationModel {
-        return $this->service->updateReservation($body);
+        return $this->service->updateReservation($id, $body);
     }
 }
