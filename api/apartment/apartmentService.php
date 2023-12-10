@@ -1,4 +1,8 @@
 <?php
+require_once 'apartmentRepository.php';
+require_once 'apartmentModel.php';
+require_once 'commons/exceptions/service_exceptions.php';
+
 class ApartmentService{
     private $repository;
 

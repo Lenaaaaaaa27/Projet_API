@@ -1,4 +1,10 @@
 <?php
+require_once 'apartmentService.php';
+require_once 'apartmentModel.php';
+require_once 'commons/exceptions/controller_exceptions.php';
+require_once 'commons/response.php';
+require_once 'commons/request.php';
+
 class ApartmentController{
     private $service;
 
@@ -6,7 +12,7 @@ class ApartmentController{
         $this->service = new ApartmentService();
     }
 
-    public function router($req, $res){
+    public function router(Request $req, Response $res): Response{
         switch($req->getMethod()){
             case 'GET':
                 if($req->getPathAt(3) === 'free')
