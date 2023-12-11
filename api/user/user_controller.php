@@ -50,24 +50,26 @@ class UserController{
                 return $result;
                 break;
     
-           /*  case 'PATCH':
+            case 'PATCH':
     
                 $body = file_get_contents("php://input");
                 $json = json_decode($body);
     
-                if (!isset($json->description) && !isset($json->done)) {
+                if (!isset($json->new_password) && !isset($json->current_password) 
+                    && !isset($json->new_mail) && !isset($json->current_mail)
+                    && !isset($json->id) && !isset($json->role)) {
                     exit_with_message("Bad Request", 400);
                 }
     
                 try {
                     $result = $this->UserService->UpdateUser($json);
-                    exit_with_message("Updated", 200);
+                    exit_with_content($result);
                 } catch (HTTPException $e) {
                     exit_with_message($e->getMessage(), $e->getCode());
                 }
 
                 return $result;
-                break; */
+                break;
     
             case 'DELETE':
 

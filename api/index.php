@@ -69,7 +69,7 @@ switch($uri[2]){
         try{
             $Login->Deconnection(intval($json->id));
             exit_with_message("Déconnexion effectuée", 200);
-        }catch(FailConnexionAccount){
+        }catch(FailConnexionAccount $e){
             echo $e->getMessage();
         }
         break;

@@ -37,20 +37,23 @@ class UserService{
         return $this->repository->CreateUser(new UserModel($body->mail, $body->password, $body->role, NULL));
     }
 
-/*     function UpdateUser(stdClass $body): UserModel {
+    function UpdateUser(stdClass $body): UserModel {
         $salt = "DJSOJQ02ddqodkCSQDzqdzdKOPDKSDkapodkP09D92KC2ie2I";
 
-        $body->password = $body->password . $salt;
-        $body->password = hash('sha256', $body->password);
+        $body->current_password = $body->current_password . $salt;
+        $body->current_password = hash('sha256', $body->current_password);
 
-        $user = $this->repository->GetUser(intval($body->id));
+        $user = $this->repository->getUser(intval($body->id));
 
-        if ($user->password != $body->password) {
+        if ($user->password != $body->current_password) {
             throw new FailConnexionAccount("Mail or/and password is wrong !");
         }
 
-        return $this->repository->UpdateUser(new UserModel($body->mail, $body->password, $body->role, $body->id));
-    } */
+        $body->new_password = $body->new_password . $salt;
+        $body->new_password = hash('sha256', $body->new_password);
+
+        return $this->repository->UpdateUser(new UserModel($body->new_mail, $body->new_password, $body->role, $body->id));
+    }
 
     function DeleteUser(stdClass $body): void {
 

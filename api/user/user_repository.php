@@ -63,10 +63,15 @@ class UserRepository{
 
         return $Users;
     }
-/* 
-    public function UpdateUser(UserModel $body): UserModel{
-        
-    } */
+
+    public function UpdateUser(UserModel $userModel): UserModel{
+        $query = pg_prepare($this->connection, "UpdateUser", "UPDATE \"USER\" SET mail = $1, password = $2, role = $3 WHERE id = $4 RETURNING id, mail, password, role, token");
+        $result = pg_execute($this->connection, "UpdateUser", array($userModel->mail, $userModel->password, $userModel->role, $userModel->id));
+
+        $user = pg_fetch_assoc($result);
+
+        return new UserModel($user["mail"], $user["password"], $user["role"], $user["id"], $user["token"]);
+    }
 
     public function DeleteUser(int $id){
         $query = pg_prepare($this->connection, "DeleteUser", "DELETE FROM \"USER\" WHERE id = $1");
