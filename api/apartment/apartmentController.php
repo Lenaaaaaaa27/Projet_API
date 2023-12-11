@@ -18,7 +18,7 @@ class ApartmentController{
                 if($req->getPathAt(4) === 'free')
                     $res->setContent($this->service->getFreeApartments());
                 elseif($req->getPathAt(4) !== '')
-                    $res->setContent($this->service->getApartment($req->getPathAt(3)));
+                    $res->setContent($this->service->getApartment($req->getPathAt(4)));
                 else
                     $res->setContent($this->service->getApartments());
                 break;
@@ -41,7 +41,7 @@ class ApartmentController{
                     throw new BadRequestException('Please provide the ID of the apartment you want to delete.');
 
                 $this->service->deleteApartment($req->getPathAt(4));
-                $res->setMessage('Successfully deleted Apartment of ID ' . $req->getPathAt(3), 200);
+                $res->setMessage('Successfully deleted Apartment of ID ' . $req->getPathAt(4), 200);
                 break;
         }
     }
