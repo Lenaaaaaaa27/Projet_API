@@ -1,3 +1,4 @@
+    }
 <?php 
 
 class ServiceException extends Exception {
@@ -15,6 +16,21 @@ class FailConnexionAccount extends ServiceException{
 
 class EmailAlreadyExist extends ServiceException{
     public function __construct($message = "Can't add User because email is already used") {
+        parent::__construct(message: $message);
+    }
+}
+
+class ValueTakenExcepiton extends ServiceException {
+    public function __construct($message = "Can't create object: one of its value is taken already.") {
+        parent::__construct(message: $message);
+    }
+}
+class EntityNotFoundException extends ServiceException {
+    public function __construct($message = "Not Found") {
+        parent::__construct(message: $message);
+}
+class ValidationException extends ServiceException {
+    public function __construct($message = "Wrong data provided!") {
         parent::__construct(message: $message);
     }
 }

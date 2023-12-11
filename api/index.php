@@ -1,8 +1,12 @@
 <?php 
 
-include_once 'user/user_controller.php';
-include_once 'commons/exceptions/controller_exceptions.php';
-include_once 'auth/Login.php';
+include_once 'reservation/reservation_controller.php';
+include_once './commons/request.php';
+include_once './commons/response.php';
+include_once './commons/middlewares/json_middleware.php';
+include_once './commons/exceptions/controller_exceptions.php';
+// error_reporting(E_ERROR | E_PARSE);
+
 
 // Skipper les warnings, pour la production (vos exceptions devront être gérées proprement)
 error_reporting(E_ERROR | E_PARSE);
@@ -14,67 +18,51 @@ header("Access-Control-Allow-Origin: *");
 header('Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS,PATCH');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
-// On récupère l'URI de la requête et on le découpe en fonction des / 
-$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$uri = explode( '/', $uri ); // On obtient un tableau de la forme ['index.php', 'todos', '1']
 
-// Si on a moins de 3 éléments dans l'URI, c'est que l'on est sur l'index de l'API
-if (sizeof($uri) < 3) {
-    header("HTTP/1.1 200 OK");
-    echo '{"message": "Welcome to the API"}';
-    exit();
+class GeneralController {
+    function dispatch (Request $req,Response $res): void {
+        $res->setMessage("Welcome !");
+    }
 }
 
-function exit_with_message($message = "Internal Server Error", $code = 500) {
-    http_response_code($code);
-    echo '{"message": "' . $message . '"}';
-    exit();
+function router(Request $req, Response $res): void {
+    $controller = null;
+    switch($req->getPathAt(2)) {
+        case(null):
+            $controller = new GeneralController();
+            break;
+
+        case 'reservation':
+            $controller = new ReservationController();
+            break;
+        default:
+            // Si la ressource demandée n'existe pas, alors on renvoie une erreur 404
+            throw new NotFoundException("Ce point d'entrée n'existe pas !");
+            break;
+    }
+
+        $controller->dispatch($req, $res);
 }
 
-function exit_with_content($content = null, $code = 200) {
-    http_response_code($code);
-    echo json_encode($content);
-    exit();
+// On instancie req et res
+$req = new Request();
+$res = new Response();
+
+// Chainer les middlewares et le controlleur pour les appeler tour a tour 
+try {
+
+    json_middleware($req, $res);
+
+    router($req, $res);
+} catch (NotFoundException | EntityNotFoundException | BDDNotFoundException $e) {
+    $res->setMessage($e->getMessage(), 404);
+} catch (ValidationException | ValueTakenExcepiton | BadRequestException $e) {
+    $res->setMessage($e->getMessage(), 400);
+} catch (Exception $e) {
+    $res->setMessage("An error occured with the server.", 500);
 }
 
-$UserController = new UserController($uri, parse_url($_SERVER['REQUEST_METHOD'], PHP_URL_PATH));
-$Login = new Login;
 
-switch($uri[2]){
-    case 'user' : 
-        try{
-            exit_with_content($UserController->switch_methods());
-        }catch(EmailAlreadyExist | FailConnexionAccount $e){
-            echo $e->getMessage();
-        }
-
-        break;
-
-    case 'login' :
-        $body = file_get_contents("php://input");
-        $json = json_decode($body);
-
-        try{
-            exit_with_content($Login->Connection($json->mail, $json->password));
-        }catch(FailConnexionAccount){
-            echo $e->getMessage();
-        }
-        break;
-    
-    case 'logout' : 
-
-        $body = file_get_contents("php://input");
-        $json = json_decode($body);
-
-        try{
-            $Login->Deconnection(intval($json->id));
-            exit_with_message("Déconnexion effectuée", 200);
-        }catch(FailConnexionAccount $e){
-            echo $e->getMessage();
-        }
-        break;
-        
-    default :
-        header("HTTP/1.1 404 Not Found");
-        echo "{\"message\": \"Not Found\"}";
-}
+// On envoie la réponse
+$res->send();
+?>
