@@ -18,7 +18,7 @@ class ApartmentController{
                 if($req->getPathAt(4) === 'free')
                     $res->setContent($this->service->getFreeApartments());
                 elseif($req->getPathAt(4) !== '')
-                    $res->setContent($this->service->getApartment($req->getPathAt(3)));
+                    $res->setContent($this->service->getApartment($req->getPathAt(4)));
                 else
                     $res->setContent($this->service->getApartments());
                 break;
