@@ -13,13 +13,6 @@ require_once 'apartment/apartmentController.php';
 // Skipper les warnings, pour la production (vos exceptions devront être gérées proprement)
 error_reporting(E_ERROR | E_PARSE);
 
-class GeneralController{
-    public function dispatch(Request $req, Response $res): void{
-        $res->setMessage('Welcome to the renting API !');
-    }
-}
-
-
 class GeneralController {
     function dispatch (Request $req,Response $res): void {
         $res->setMessage("Welcome !");
@@ -70,6 +63,7 @@ function router(Request $req, Response $res): void {
                     break;
 
                 case 'apartment':
+                    $controller = new ApartmentController();
                     break;
             }
 
@@ -96,9 +90,7 @@ try {
     router($req, $res);
 } catch (NotFoundException | EntityNotFoundException | BDDNotFoundException $e) {
     $res->setMessage($e->getMessage(), 404);
-} catch (ValidationException | ValueTakenExcepiton | BadRequestException $e) {
-    $res->setMessage($e->getMessage(), 400);
-}catch (EmailAlreadyExist |FailConnexionAccount $e){
+} catch (ValidationException | ValueTakenExcepiton | BadRequestException | EmailAlreadyExist |FailConnexionAccount $e) {
     $res->setMessage($e->getMessage(), 400);
 } catch (Exception $e) {
     $res->setMessage("An error occured with the server.", 500);

@@ -15,9 +15,9 @@ class ApartmentController{
     public function dispatch(Request $req, Response $res): void{
         switch($req->getMethod()){
             case 'GET':
-                if($req->getPathAt(3) === 'free')
+                if($req->getPathAt(4) === 'free')
                     $res->setContent($this->service->getFreeApartments());
-                elseif($req->getPathAt(3) !== '')
+                elseif($req->getPathAt(4) !== '')
                     $res->setContent($this->service->getApartment($req->getPathAt(3)));
                 else
                     $res->setContent($this->service->getApartments());
@@ -29,18 +29,18 @@ class ApartmentController{
                 break;
 
             case 'PATCH':
-                if($req->getPathAt(3) === '')
+                if($req->getPathAt(4) === '')
                     throw new BadRequestException('Please provide the ID of the apartment you want to modify.');
 
-                $result = $this->service->modifyApartment($req->getPathAt(3), $req->getBody());
+                $result = $this->service->modifyApartment($req->getPathAt(4), $req->getBody());
                 $res->setContent($result);
                 break;
 
             case 'DELETE':
-                if($req->getPathAt(3) === '')
+                if($req->getPathAt(4) === '')
                     throw new BadRequestException('Please provide the ID of the apartment you want to delete.');
 
-                $this->service->deleteApartment($req->getPathAt(3));
+                $this->service->deleteApartment($req->getPathAt(4));
                 $res->setMessage('Successfully deleted Apartment of ID ' . $req->getPathAt(3), 200);
                 break;
         }
