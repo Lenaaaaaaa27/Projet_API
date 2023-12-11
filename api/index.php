@@ -9,15 +9,15 @@ include_once 'user/user_controller.php';
 // error_reporting(E_ERROR | E_PARSE);
 
 
+require_once 'apartment/apartmentController.php';
 // Skipper les warnings, pour la production (vos exceptions devront être gérées proprement)
 error_reporting(E_ERROR | E_PARSE);
 
-// le contenu renvoyé par le serveur sera du JSON
-header("Content-Type: application/json; charset=utf8");
-// Autorise les requêtes depuis localhost
-header("Access-Control-Allow-Origin: *");
-header('Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS,PATCH');
-header('Access-Control-Allow-Headers: Content-Type, Authorization');
+class GeneralController{
+    public function dispatch(Request $req, Response $res): void{
+        $res->setMessage('Welcome to the renting API !');
+    }
+}
 
 
 class GeneralController {
