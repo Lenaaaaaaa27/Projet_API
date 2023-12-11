@@ -46,7 +46,7 @@ function router(Request $req, Response $res): void {
                     break;
                 
                 case 'apartment' :
-                    //Ajouter $controller FLAT
+                    $controller = new ApartmentController();
                     break;
             }
 
