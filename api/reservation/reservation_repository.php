@@ -19,17 +19,18 @@ class ReservationRepository {
 
     private function query(string $query,string ...$args): PgSql\Result {
         $prepared = pg_prepare($this->connection, "", $query);
-        var_dump(pg_last_error($this->connection));
         
         if (!$prepared) {
+            var_dump(pg_last_error($this->connection));
             throw new BDDException(pg_last_error($this->connection));
         }
         
         $result = pg_execute($this->connection, "", $args);
         if (!$result) {
+          
             throw new BDDException(pg_last_error($this->connection));
         }
- 
+        
         return $result;
     }
 
@@ -69,14 +70,16 @@ class ReservationRepository {
         return new ReservationModel($reservation['start_date'], $reservation['end_date'], $reservation['price'], $reservation['renter'], $reservation['apartment'],$reservation['id']);
     }
 
-    public function getReservationByDate(string $start_date, string $end_date, string $apartment): mixed {
+    public function getReservationByDate(string $start_date, string $end_date, string $apartment, string $reservationId): mixed {
         $query = "SELECT * FROM RESERVATION WHERE 
         apartment = $1 AND 
+        RESERVATION.id <> $4 AND
         (start_date BETWEEN $2 AND $3 OR 
         end_date BETWEEN $2 AND $3 OR
-        (start_date <= $2 AND end_date >= $3))";
+        (start_date <= $2 AND end_date >= $3))
+        ";
         
-        $result = $this->query($query, $apartment, $start_date, $end_date);
+        $result = $this->query($query, $apartment, $start_date, $end_date,$reservationId);
 
         return pg_fetch_assoc($result);
     }
@@ -118,19 +121,19 @@ class ReservationRepository {
         }
         if (isset($reservation->end_date)) {
             $values[] = $reservation->end_date;
-            $query .= "end_date = $".sizeof($values);
+            $query .= ",end_date = $".sizeof($values);
         }
         if (isset($reservation->price)) {
             $values[] = $reservation->price;
-            $query .= "price = $".sizeof($values);
+            $query .= ",price = $".sizeof($values);
         }
         if (isset($reservation->renter)) {
             $values[] = $reservation->renter;
-            $query .= "renter = $".sizeof($values);
+            $query .= ",renter = $".sizeof($values);
         }
         if (isset($reservation->apartment)) {
             $values[] = $reservation->apartment;
-            $query .= "apartment = $".sizeof($values);
+            $query .= ",apartment = $".sizeof($values);
         }
 
         $query .= " WHERE id = $id RETURNING id, start_date,end_date,price,renter,apartment";
@@ -146,6 +149,6 @@ class ReservationRepository {
 
         $modified = pg_fetch_assoc($result);
 
-        return new ReservationModel($modified['id'], $modified['start_date'], $modified['end_date'], $modified['price'], $modified['renter'], $modified['apartment']);
+        return new ReservationModel($modified['start_date'], $modified['end_date'], $modified['price'], $modified['renter'], $modified['apartment'],$modified['id']);
     }
 }

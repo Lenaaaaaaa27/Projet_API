@@ -44,7 +44,7 @@ class ReservationService {
             throw new ValueTakenExcepiton("A reservation cannot be made for less than one day.");
         }
 
-        $existing = $this->repository->getReservationByDate($body->start_date, $body->end_date, $body->apartment);
+        $existing = $this->repository->getReservationByDate($body->start_date, $body->end_date, $body->apartment,"0");
 
         if($existing) {
             throw new ValueTakenExcepiton("the apartment is already booked during this period");
@@ -78,7 +78,7 @@ class ReservationService {
             throw new ValueTakenExcepiton("A reservation cannot be made for less than one day.");
         }
         
-        $existing = $this->repository->getReservationByDate($body->start_date, $body->start_date, $body->apartment);
+        $existing = $this->repository->getReservationByDate($body->start_date, $body->start_date, $body->apartment,$id);
 
         if($existing) {
             throw new ValueTakenExcepiton("the apartment is already booked during this period");

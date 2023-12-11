@@ -40,7 +40,7 @@ function dispatch(Request $req, Response $res): void {
 
         case 'DELETE':
             if ($req->getPathAt(3) === "") {
-                throw new BadRequestException("Please provide an ID for the music to delete.");
+                throw new BadRequestException("Please provide an ID for the reservation to delete.");
             }
             $this->deleteReservation($req->getPathAt(3));
             $res->setMessage("Successfuly deleted resource.", 200); 
