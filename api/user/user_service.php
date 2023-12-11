@@ -11,22 +11,22 @@ class UserService{
         $this->repository = new UserRepository();
     }
 
-    function GetUsers(): array {
-        return $this->repository->GetUsers();
+    function getUsers(): array {
+        return $this->repository->getUsers();
     }
 
-    function GetUser(int $id): UserModel{
-        return $this->repository->GetUser($id);
+    function getUser(int $id): UserModel{
+        return $this->repository->getUser($id);
     }
 
-    function CreateUser(stdClass $body): UserModel {
+    function createUser(stdClass $body): UserModel {
 
         $salt = "DJSOJQ02ddqodkCSQDzqdzdKOPDKSDkapodkP09D92KC2ie2I";
 
         $body->password = $body->password . $salt;
         $body->password = hash('sha256', $body->password);
         
-        $users = $this->repository->GetUsers();
+        $users = $this->repository->getUsers();
 
         foreach ($users as $user) {
             if ($user->mail === $body->mail) {
@@ -34,10 +34,10 @@ class UserService{
             }
         }
         
-        return $this->repository->CreateUser(new UserModel($body->mail, $body->password, $body->role, NULL));
+        return $this->repository->createUser(new UserModel($body->mail, $body->password, $body->role, NULL));
     }
 
-    function UpdateUser(stdClass $body): UserModel {
+    function updateUser(stdClass $body): UserModel {
         $salt = "DJSOJQ02ddqodkCSQDzqdzdKOPDKSDkapodkP09D92KC2ie2I";
 
         $body->current_password = $body->current_password . $salt;
@@ -52,23 +52,11 @@ class UserService{
         $body->new_password = $body->new_password . $salt;
         $body->new_password = hash('sha256', $body->new_password);
 
-        return $this->repository->UpdateUser(new UserModel($body->new_mail, $body->new_password, $body->role, $body->id));
+        return $this->repository->updateUser(new UserModel($body->new_mail, $body->new_password, $body->role, $body->id));
     }
 
-    function DeleteUser(stdClass $body): void {
-
-        $salt = "DJSOJQ02ddqodkCSQDzqdzdKOPDKSDkapodkP09D92KC2ie2I";
-
-        $body->password = $body->password . $salt;
-        $body->password = hash('sha256', $body->password);
-
-        $user = $this->repository->GetUser(intval($body->id));
-
-        if ($user->password != $body->password) {
-            throw new FailConnexionAccount("Mail or/and password is wrong !");
-        }
-
-        $this->repository->DeleteUser($body->id);
+    function deleteUser(int $id): void {
+        $this->repository->DeleteUser($id);
     }
 
 }

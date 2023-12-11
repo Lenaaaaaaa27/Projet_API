@@ -1,4 +1,3 @@
-    }
 <?php 
 
 class ServiceException extends Exception {
@@ -28,6 +27,7 @@ class ValueTakenExcepiton extends ServiceException {
 class EntityNotFoundException extends ServiceException {
     public function __construct($message = "Not Found") {
         parent::__construct(message: $message);
+    }
 }
 class ValidationException extends ServiceException {
     public function __construct($message = "Wrong data provided!") {

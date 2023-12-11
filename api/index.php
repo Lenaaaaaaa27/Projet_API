@@ -5,6 +5,7 @@ include_once './commons/request.php';
 include_once './commons/response.php';
 include_once './commons/middlewares/json_middleware.php';
 include_once './commons/exceptions/controller_exceptions.php';
+include_once 'user/user_controller.php';
 // error_reporting(E_ERROR | E_PARSE);
 
 
@@ -35,6 +36,10 @@ function router(Request $req, Response $res): void {
         case 'reservation':
             $controller = new ReservationController();
             break;
+
+        case 'user':
+            $controller = new UserController();
+            break;
         default:
             // Si la ressource demandée n'existe pas, alors on renvoie une erreur 404
             throw new NotFoundException("Ce point d'entrée n'existe pas !");
@@ -57,6 +62,8 @@ try {
 } catch (NotFoundException | EntityNotFoundException | BDDNotFoundException $e) {
     $res->setMessage($e->getMessage(), 404);
 } catch (ValidationException | ValueTakenExcepiton | BadRequestException $e) {
+    $res->setMessage($e->getMessage(), 400);
+}catch (EmailAlreadyExist |FailConnexionAccount $e){
     $res->setMessage($e->getMessage(), 400);
 } catch (Exception $e) {
     $res->setMessage("An error occured with the server.", 500);

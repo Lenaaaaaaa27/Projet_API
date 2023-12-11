@@ -5,86 +5,66 @@ include_once 'user_service.php';
 
 class UserController{
 
-    public $UserService;
-    public $uri;
-    public $method;
+    public $userService;
 
-    public function __construct($uri, $method){
-        $this->UserService = new UserService;
-        $this->uri = $uri;
-        $this->method = $method;
+    public function __construct(){
+        $this->userService = new UserService;
     }
 
-    public function switch_methods(){
-
-        switch($this->method) {
+    public function dispatch(Request $req, Response $res):void{
+        switch($req->getMethod()) {
             case 'GET':
                 
-                if (sizeof($this->uri) == 4) {
+                if ($req->getPathAt(3) !== "" && is_string($req->getPathAt(3))) {
                     try {
-                       $result = $this->UserService->GetUser(intval($this->uri[3]));
+                       $res->setContent($this->userService->getUser(intval($req->getPathAt(3))));
                     } catch (HTTPException $e) {
-                        exit_with_message($e->getMessage(), $e->getCode());
+                        $res->setContent($e->getMessage(), $e->getCode());
                     }
                 } else{
-                    $result = $this->UserService->GetUsers();
+                    $res->setContent($result = $this->userService->getUsers());
                 }
                 
-                return $result;
                 break;
     
             case 'POST':
-                $body = file_get_contents("php://input");
-                $json = json_decode($body);
-    
-                if (!isset($json)) {
-                    exit_with_message("Bad Request", 400);
+                if (!$req->getBody()) {
+                    $res->setMessage("Bad Request", 400);
                 }
     
                 try {
-                    $result = $this->UserService->CreateUser($json);
+                    $res->setContent($result = $this->userService->createUser($req->getBody()));
                 } catch (HTTPException $e) {
-                    exit_with_message($e->getMessage(), $e->getCode());
+                    $res->setMessage($e->getMessage(), $e->getCode());
                 }
-
-                return $result;
                 break;
     
             case 'PATCH':
     
-                $body = file_get_contents("php://input");
-                $json = json_decode($body);
-    
-                if (!isset($json->new_password) && !isset($json->current_password) 
-                    && !isset($json->new_mail) && !isset($json->current_mail)
-                    && !isset($json->id) && !isset($json->role)) {
-                    exit_with_message("Bad Request", 400);
+                if (!isset($req->getBody()->new_password) && !isset($req->getBody()->current_password) 
+                    && !isset($req->getBody()->new_mail) && !isset($req->getBody()->current_mail)
+                    && !isset($req->getBody()->id) && !isset($req->getBody()->role)) {
+                        $res->setMessage("Bad Request", 400);
                 }
     
                 try {
-                    $result = $this->UserService->UpdateUser($json);
-                    exit_with_content($result);
+                    $res->setContent($this->userService->updateUser($req->getBody()));
                 } catch (HTTPException $e) {
-                    exit_with_message($e->getMessage(), $e->getCode());
+                    $res->setMessage($e->getMessage(), $e->getCode());
                 }
-
-                return $result;
                 break;
     
             case 'DELETE':
 
-                $body = file_get_contents("php://input");
-                $json = json_decode($body);
-
-                if (!isset($json)) {
-                    exit_with_message("Bad Request", 400);
+                if ($req->getPathAt(3) === "") {
+                    throw new BadRequestException("Please provide an ID for the user to delete.");
                 }
-    
+
                 try {                    
-                    $this->UserService->DeleteUser($json);
-                    exit_with_message("Deleted", 200);
+                    $this->userService->deleteUser($req->getPathAt(3));
+                    $res->setMessage("Deleted", 200);
                 } catch (HTTPException $e) {
-                    exit_with_message($e->getMessage(), $e->getCode());
+                    $res->setMessage($e->getMessage(), $e->getCode());
                 }
                 
                 break;

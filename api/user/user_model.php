@@ -35,23 +35,5 @@ class UserModel{
         $this->id = $id;
         $this->token = $token;
     }
-
-    // Au cas où on met les attributs en private
-
-/*     public function get_id(){
-        return $this->id;
-    }
-
-    public function get_role(){
-        return $this->role;
-    }
-
-    public function get_mail(){
-        return $this->mail;
-    }
-
-    public function get_password(){
-        return  $this->password;
-    } */
 }
 

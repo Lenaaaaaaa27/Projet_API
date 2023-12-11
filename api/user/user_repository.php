@@ -18,10 +18,10 @@ class UserRepository{
         }
     }
 
-    public function CreateUser(UserModel $body): UserModel{
+    public function createUser(UserModel $body): UserModel{
 
-        $query = pg_prepare($this->connection, "CreateUser", "INSERT INTO \"USER\" (mail, password, role) VALUES ($1, $2, $3) RETURNING id, mail, password, role");
-        $result = pg_execute($this->connection, "CreateUser", [$body->mail, $body->password, $body->role]);
+        $query = pg_prepare($this->connection, "createUser", "INSERT INTO \"USER\" (mail, password, role) VALUES ($1, $2, $3) RETURNING id, mail, password, role");
+        $result = pg_execute($this->connection, "createUser", [$body->mail, $body->password, $body->role]);
 
         if (!$result) {
             throw new HttpException(pg_last_error());
@@ -32,9 +32,9 @@ class UserRepository{
         return new UserModel($user["mail"], $user["password"], $user["role"], $user["id"], NULL);
     }
 
-    public function GetUser(int $id): UserModel{
-        $query = pg_prepare($this->connection, "GetUser", "SELECT * FROM \"USER\" WHERE id = $1");
-        $result = pg_execute($this->connection, "GetUser", [$id]);
+    public function getUser(int $id): UserModel{
+        $query = pg_prepare($this->connection, "getUser", "SELECT * FROM \"USER\" WHERE id = $1");
+        $result = pg_execute($this->connection, "getUser", [$id]);
 
         if (!$result) {
             throw new HttpException(pg_last_error());
@@ -48,7 +48,7 @@ class UserRepository{
         return new UserModel($user["mail"], $user["password"], $user["role"], $user["id"], $user["token"]);
     }
 
-    public function GetUsers():array{
+    public function getUsers():array{
 
         $query = pg_query($this->connection, "SELECT * FROM \"USER\" ORDER BY id DESC");
         $Users = [];
@@ -64,16 +64,16 @@ class UserRepository{
         return $Users;
     }
 
-    public function UpdateUser(UserModel $userModel): UserModel{
-        $query = pg_prepare($this->connection, "UpdateUser", "UPDATE \"USER\" SET mail = $1, password = $2, role = $3 WHERE id = $4 RETURNING id, mail, password, role, token");
-        $result = pg_execute($this->connection, "UpdateUser", array($userModel->mail, $userModel->password, $userModel->role, $userModel->id));
+    public function updateUser(UserModel $userModel): UserModel{
+        $query = pg_prepare($this->connection, "updateUser", "UPDATE \"USER\" SET mail = $1, password = $2, role = $3 WHERE id = $4 RETURNING id, mail, password, role, token");
+        $result = pg_execute($this->connection, "updateUser", array($userModel->mail, $userModel->password, $userModel->role, $userModel->id));
 
         $user = pg_fetch_assoc($result);
 
         return new UserModel($user["mail"], $user["password"], $user["role"], $user["id"], $user["token"]);
     }
 
-    public function DeleteUser(int $id){
+    public function deleteUser(int $id){
         $query = pg_prepare($this->connection, "DeleteUser", "DELETE FROM \"USER\" WHERE id = $1");
         $result = pg_execute($this->connection, "DeleteUser", [$id]);
 

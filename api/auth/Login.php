@@ -26,7 +26,7 @@ class Login{
         $password = hash('sha256', $password);
 
 
-        $user = $this->GetUserByMail($mail, $password);
+        $user = $this->getUserByMail($mail, $password);
 
         $UserModel = new UserModel($user["mail"], $user["password"], $user["role"], $user["id"], NULL);
         $UserModel->token = GenerateToken($UserModel);
@@ -49,10 +49,10 @@ class Login{
         }
         
     }
-    public function GetUserByMail(string $mail, string $password):array{
+    public function getUserByMail(string $mail, string $password):array{
 
-        $query = pg_prepare($this->connection, "GetUser", "SELECT * FROM \"USER\" WHERE mail = $1 AND password = $2");
-        $result = pg_execute($this->connection, "GetUser", [$mail, $password]);
+        $query = pg_prepare($this->connection, "getUser", "SELECT * FROM \"USER\" WHERE mail = $1 AND password = $2");
+        $result = pg_execute($this->connection, "getUser", [$mail, $password]);
 
         
         if (!$result) {
@@ -65,15 +65,15 @@ class Login{
     public function AddToken(UserModel $userModel):object{
 
         $userModel->id = intval($userModel->id);
-        $query = pg_prepare($this->connection, "UpdateUser", "UPDATE \"USER\" SET token = $1 WHERE id = $2");
-        $result = pg_execute($this->connection, "UpdateUser", array($userModel->token, $userModel->id));
+        $query = pg_prepare($this->connection, "updateUser", "UPDATE \"USER\" SET token = $1 WHERE id = $2");
+        $result = pg_execute($this->connection, "updateUser", array($userModel->token, $userModel->id));
 
         return $result;
     }
 
     public function DeleteToken(int $id){
-        $query = pg_prepare($this->connection, "UpdateUser", "UPDATE \"USER\" SET token = $1 WHERE id = $2");
-        $result = pg_execute($this->connection, "UpdateUser", array(NULL, $id));
+        $query = pg_prepare($this->connection, "updateUser", "UPDATE \"USER\" SET token = $1 WHERE id = $2");
+        $result = pg_execute($this->connection, "updateUser", array(NULL, $id));
         
         if(!$result){
             throw new BDDException("Could not execute the request");
