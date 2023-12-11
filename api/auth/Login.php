@@ -41,12 +41,13 @@ class Login{
     }
 
     public function Deconnection(int $id){
-        if(!$this->DeleteToken($id)){
-            echo 'y a eu un pb';
-            exit;
-        }
 
-        echo "ca a marche";
+        try{
+            $this->DeleteToken($id);
+        }catch (Exception $e){
+            throw new BDDException("Could not execute the request: ". $e->getMessage());
+        }
+        
     }
     public function GetUserByMail(string $mail, string $password):array{
 
@@ -73,8 +74,10 @@ class Login{
     public function DeleteToken(int $id){
         $query = pg_prepare($this->connection, "UpdateUser", "UPDATE \"USER\" SET token = $1 WHERE id = $2");
         $result = pg_execute($this->connection, "UpdateUser", array(NULL, $id));
-
-        return $result;
+        
+        if(!$result){
+            throw new BDDException("Could not execute the request");
+        }
     }
 
   
