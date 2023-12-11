@@ -34,9 +34,4 @@ class ValidationException extends ServiceException {
         parent::__construct(message: $message);
     }
 }
-class ApartmentAlreadyExists extends ServiceException{
-    public function __construct($message = "Apartment Already exists"){
-        parent::__construct(message: $message);
-    }
-}
 ?>
