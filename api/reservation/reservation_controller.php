@@ -16,8 +16,8 @@ class ReservationController {
 function dispatch(Request $req, Response $res): void {
     switch($req->getMethod()) {
         case 'GET':
-            if ($req->getPathAt(3) !== "" && is_string($req->getPathAt(3))) {
-                $res->setContent($this->getReservation($req->getPathAt(3)));
+            if ($req->getPathAt(4) !== "" && is_string($req->getPathAt(4))) {
+                $res->setContent($this->getReservation($req->getPathAt(4)));
             } else {
                 $res->setContent($this->getReservations());
             }
@@ -30,19 +30,19 @@ function dispatch(Request $req, Response $res): void {
             break;
 
         case 'PATCH':
-            if ($req->getPathAt(3) === "") {
+            if ($req->getPathAt(4) === "") {
                 throw new BadRequestException("Please provide an ID for the reservation to modify.");
             }
             
-            $result = $this->patchReservation($req->getPathAt(3), $req->getBody());
+            $result = $this->patchReservation($req->getPathAt(4), $req->getBody());
             $res->setContent($result, 200); 
             break;
 
         case 'DELETE':
-            if ($req->getPathAt(3) === "") {
+            if ($req->getPathAt(4) === "") {
                 throw new BadRequestException("Please provide an ID for the reservation to delete.");
             }
-            $this->deleteReservation($req->getPathAt(3));
+            $this->deleteReservation($req->getPathAt(4));
             $res->setMessage("Successfuly deleted resource.", 200); 
             break;
     }

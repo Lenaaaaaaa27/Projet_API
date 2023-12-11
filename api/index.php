@@ -33,13 +33,48 @@ function router(Request $req, Response $res): void {
             $controller = new GeneralController();
             break;
 
-        case 'reservation':
-            $controller = new ReservationController();
+        case 'auth' : 
+            switch($req->getPathAt(3)){
+                case 'login' :
+                    
+                    break;
+
+                case 'logout' :
+                    break;
+            }
+
             break;
 
-        case 'user':
-            $controller = new UserController();
+        case 'back_office' : 
+
+            switch($req->getPathAt(3)){
+                case 'user' :
+                    $controller = new UserController();
+                    break;
+                
+                case 'apartment' :
+                    //Ajouter $controller FLAT
+                    break;
+            }
+
             break;
+
+        case 'restpatrop' : 
+            switch($req->getPathAt(3)){
+                case 'reservation':
+                    $controller = new ReservationController();
+                    break;
+        
+                case 'user':
+                    $controller = new UserController();
+                    break;
+
+                case 'apartment':
+                    break;
+            }
+
+            break;
+        
         default:
             // Si la ressource demandée n'existe pas, alors on renvoie une erreur 404
             throw new NotFoundException("Ce point d'entrée n'existe pas !");

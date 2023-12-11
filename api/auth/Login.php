@@ -6,12 +6,12 @@ include_once 'user/user_model.php';
 
 class Login{
 
-    private $connection = null;
+    private $login = null;
 
     public function __construct() {
             try {
-                $this->connection = pg_connect("host=database port=5432 dbname=rent_db user=rental password=password");
-            if (  $this->connection == null ) {
+                $this->login = pg_connect("host=database port=5432 dbname=rent_db user=rental password=password");
+            if (  $this->login == null ) {
                 throw new BDDException("Could not connect to database.");
             }
         } catch (Exception $e) {
@@ -19,7 +19,7 @@ class Login{
         }
     }
 
-    public function Connection(string $mail, string $password):UserModel{
+    public function login(string $mail, string $password):UserModel{
         $salt = "DJSOJQ02ddqodkCSQDzqdzdKOPDKSDkapodkP09D92KC2ie2I";
 
         $password = $password . $salt;
@@ -40,10 +40,10 @@ class Login{
 
     }
 
-    public function Deconnection(int $id){
+    public function logout(int $id){
 
         try{
-            $this->DeleteToken($id);
+            $this->updateToken($id);
         }catch (Exception $e){
             throw new BDDException("Could not execute the request: ". $e->getMessage());
         }
@@ -51,8 +51,8 @@ class Login{
     }
     public function getUserByMail(string $mail, string $password):array{
 
-        $query = pg_prepare($this->connection, "getUser", "SELECT * FROM \"USER\" WHERE mail = $1 AND password = $2");
-        $result = pg_execute($this->connection, "getUser", [$mail, $password]);
+        $query = pg_prepare($this->login, "getUser", "SELECT * FROM \"USER\" WHERE mail = $1 AND password = $2");
+        $result = pg_execute($this->login, "getUser", [$mail, $password]);
 
         
         if (!$result) {
@@ -65,20 +65,21 @@ class Login{
     public function AddToken(UserModel $userModel):object{
 
         $userModel->id = intval($userModel->id);
-        $query = pg_prepare($this->connection, "updateUser", "UPDATE \"USER\" SET token = $1 WHERE id = $2");
-        $result = pg_execute($this->connection, "updateUser", array($userModel->token, $userModel->id));
+        $query = pg_prepare($this->login, "updateUser", "UPDATE \"USER\" SET token = $1 WHERE id = $2");
+        $result = pg_execute($this->login, "updateUser", array($userModel->token, $userModel->id));
 
         return $result;
     }
 
-    public function DeleteToken(int $id){
-        $query = pg_prepare($this->connection, "updateUser", "UPDATE \"USER\" SET token = $1 WHERE id = $2");
-        $result = pg_execute($this->connection, "updateUser", array(NULL, $id));
+
+    public function updateToken(int $id){
+        $query = pg_prepare($this->login, "updateUser", "UPDATE \"USER\" SET token = $1 WHERE id = $2");
+        $result = pg_execute($this->login, "updateUser", array(NULL, $id));
         
         if(!$result){
             throw new BDDException("Could not execute the request");
         }
     }
-
+    
   
 }

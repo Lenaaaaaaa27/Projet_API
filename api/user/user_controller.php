@@ -15,9 +15,9 @@ class UserController{
         switch($req->getMethod()) {
             case 'GET':
                 
-                if ($req->getPathAt(3) !== "" && is_string($req->getPathAt(3))) {
+                if ($req->getPathAt(4) !== "" && is_string($req->getPathAt(4))) {
                     try {
-                       $res->setContent($this->userService->getUser(intval($req->getPathAt(3))));
+                       $res->setContent($this->userService->getUser(intval($req->getPathAt(4))));
                     } catch (HTTPException $e) {
                         $res->setContent($e->getMessage(), $e->getCode());
                     }
@@ -61,7 +61,7 @@ class UserController{
                 }
 
                 try {                    
-                    $this->userService->deleteUser($req->getPathAt(3));
+                    $this->userService->deleteUser($req->getPathAt(4));
                     $res->setMessage("Deleted", 200);
                 } catch (HTTPException $e) {
                     $res->setMessage($e->getMessage(), $e->getCode());
