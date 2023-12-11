@@ -34,7 +34,7 @@ class Response {
     * @param int $code
     */
     function setContent($content, $code = 200): void {
-        $this->content = json_encode($content);
+        $this->content = json_encode($content, JSON_UNESCAPED_SLASHES);
         $this->code = $code;
     }
 

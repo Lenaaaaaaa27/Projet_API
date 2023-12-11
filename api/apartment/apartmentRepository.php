@@ -1,9 +1,11 @@
 <?php
 require_once 'apartmentModel.php';
+require_once 'user/user_repository.php';
 require_once 'commons/exceptions/repository_exceptions.php';
 
 class ApartmentRepository{
     private $db;
+    private $userRepository;
 
     public function __construct(){
         try{
@@ -13,6 +15,8 @@ class ApartmentRepository{
         }catch(Exception $e){
             throw new BDDException("Database connection failed :" . $e->getMessage());
         }
+
+        $this->userRepository = new UserRepository();
     }
 
     private function query($req, ...$args): PgSql\Result {
@@ -30,6 +34,15 @@ class ApartmentRepository{
         }
 
         return $res;
+    }
+
+    private function makeURLFromObject($object){
+        if(isset($object->mail)) $type = 'user';
+        if(isset($object->area)) $type = 'apartment';
+        if(isset($object->start_date)) $type = 'reservation';
+
+        $url = "http://localhost:8083/index.php/restpatrop/$type/$object->id";
+        return $url;
     }
 
     public function insertApartment(ApartmentModel $apart): ApartmentModel{
@@ -61,12 +74,15 @@ class ApartmentRepository{
 
     public function getApartment($id): ApartmentModel{
         $res = $this->getApartmentsBy('id', $id);
+        $res = $res[0];
 
         if($res == NULL){
             throw new BDDNotFoundException("Apartment not found");
         }
+        $owner = $this->userRepository->getUser($res->owner);
+        $res->owner = ['mail' => $owner->mail, 'role' => $owner->role, "url" => $this->makeURLFromObject($owner)];
 
-        return $res[0];
+        return $res;
     }
 
     /**
