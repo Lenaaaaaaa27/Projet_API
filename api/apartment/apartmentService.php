@@ -36,7 +36,7 @@ class ApartmentService{
         $existing = $this->repository->getApartmentsBy("address", $tempFlat->address);
 
         if($existing != NULL)
-            throw new ApartmentAlreadyExists("Apartment with address '$tempFlat->address' already exists.");
+            throw new ValueTakenExcepiton("Apartment with address '$tempFlat->address' already exists.");
 
         return $this->repository->insertApartment($tempFlat);
     }

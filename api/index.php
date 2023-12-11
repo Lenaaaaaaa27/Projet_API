@@ -90,7 +90,7 @@ try {
     router($req, $res);
 } catch (NotFoundException | EntityNotFoundException | BDDNotFoundException $e) {
     $res->setMessage($e->getMessage(), 404);
-} catch (ValidationException | ValueTakenExcepiton | BadRequestException | EmailAlreadyExist |FailConnexionAccount $e) {
+} catch (ValidationException | ValueTakenExcepiton | BadRequestException | EmailAlreadyExist | FailConnexionAccount $e) {
     $res->setMessage($e->getMessage(), 400);
 } catch (Exception $e) {
     $res->setMessage("An error occured with the server.", 500);
