@@ -1,5 +1,6 @@
 <?php 
 
+include_once 'auth/authentification_controller.php';
 include_once 'reservation/reservation_controller.php';
 include_once './commons/request.php';
 include_once './commons/response.php';
@@ -27,15 +28,7 @@ function router(Request $req, Response $res): void {
             break;
 
         case 'auth' : 
-            switch($req->getPathAt(3)){
-                case 'login' :
-                    
-                    break;
-
-                case 'logout' :
-                    break;
-            }
-
+            $controller = new AuthentificationController();
             break;
 
         case 'back_office' : 
