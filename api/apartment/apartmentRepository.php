@@ -1,9 +1,11 @@
 <?php
 require_once 'apartmentModel.php';
+require_once 'user/user_repository.php';
 require_once 'commons/exceptions/repository_exceptions.php';
 
 class ApartmentRepository{
     private $db;
+    private $userRepository;
 
     public function __construct(){
         try{
@@ -13,6 +15,8 @@ class ApartmentRepository{
         }catch(Exception $e){
             throw new BDDException("Database connection failed :" . $e->getMessage());
         }
+
+        $this->userRepository = new UserRepository();
     }
 
     private function query($req, ...$args): PgSql\Result {
@@ -32,12 +36,24 @@ class ApartmentRepository{
         return $res;
     }
 
+    private function makeURLFromObject($object): string{
+        if(isset($object->mail)) $type = 'user';
+        if(isset($object->area)) $type = 'apartment';
+        if(isset($object->start_date)) $type = 'reservation';
+
+        $url = "http://localhost:8083/index.php/restpatrop/$type/$object->id";
+        return $url;
+    }
+
     public function insertApartment(ApartmentModel $apart): ApartmentModel{
         $query = "INSERT INTO APARTMENT (area, capacity, address, disponibility, price, owner) 
                                 VALUES ($1, $2, $3, $4, $5, $6) RETURNING *";
 
         $res = $this->query($query, $apart->area, $apart->capacity, $apart->address, $apart->disponibility, $apart->price, $apart->owner);
         $created = pg_fetch_assoc($res);
+
+        $owner = $this->userRepository->getUser($created['owner']);
+        $created['owner'] = ['mail' => $owner->mail, 'role' => $owner->role, "url" => $this->makeURLFromObject($owner)];
 
         return new ApartmentModel($created['id'], $created['address'], $created['area'], $created['owner'], $created['capacity'], $created['price'], $created['disponibility']);
     }
@@ -53,6 +69,8 @@ class ApartmentRepository{
         
         $apartments = [];
         while($row = pg_fetch_assoc($res)){
+            $owner = $this->userRepository->getUser($row['owner']);
+            $row['owner'] = ['mail' => $owner->mail, 'role' => $owner->role, "url" => $this->makeURLFromObject($owner)];
             $apartments[] = new ApartmentModel($row['id'], $row['address'], $row['area'], $row['owner'], $row['capacity'], $row['price'], $row['disponibility']);
         }
 
@@ -61,12 +79,13 @@ class ApartmentRepository{
 
     public function getApartment($id): ApartmentModel{
         $res = $this->getApartmentsBy('id', $id);
+        $res = $res[0];
 
         if($res == NULL){
             throw new BDDNotFoundException("Apartment not found");
         }
 
-        return $res[0];
+        return $res;
     }
 
     /**
@@ -80,6 +99,8 @@ class ApartmentRepository{
 
         $apartments = [];
         while($row = pg_fetch_assoc($res)){
+            $owner = $this->userRepository->getUser($row['owner']);
+            $row['owner'] = ['mail' => $owner->mail, 'role' => $owner->role, "url" => $this->makeURLFromObject($owner)];
             $apartments[] = new ApartmentModel($row['id'], $row['address'], $row['area'], $row['owner'], $row['capacity'], $row['price'], $row['disponibility']);
         }
 
@@ -113,6 +134,10 @@ class ApartmentRepository{
         }
 
         $res = pg_fetch_assoc($res);
+
+        $owner = $this->userRepository->getUser($res['owner']);
+        $res['owner'] = ['mail' => $owner->mail, 'role' => $owner->role, "url" => $this->makeURLFromObject($owner)];
+        
         return new ApartmentModel($res['id'], $res['address'], $res['area'], $res['owner'], $res['capacity'], $res['price'], $res['disponibility']);
     }
 
