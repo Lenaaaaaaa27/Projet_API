@@ -52,6 +52,9 @@ class ApartmentRepository{
         $res = $this->query($query, $apart->area, $apart->capacity, $apart->address, $apart->disponibility, $apart->price, $apart->owner);
         $created = pg_fetch_assoc($res);
 
+        $owner = $this->userRepository->getUser($created['owner']);
+        $created['owner'] = ['mail' => $owner->mail, 'role' => $owner->role, "url" => $this->makeURLFromObject($owner)];
+
         return new ApartmentModel($created['id'], $created['address'], $created['area'], $created['owner'], $created['capacity'], $created['price'], $created['disponibility']);
     }
 
