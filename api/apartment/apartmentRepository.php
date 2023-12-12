@@ -36,7 +36,7 @@ class ApartmentRepository{
         return $res;
     }
 
-    private function makeURLFromObject($object){
+    private function makeURLFromObject($object): string{
         if(isset($object->mail)) $type = 'user';
         if(isset($object->area)) $type = 'apartment';
         if(isset($object->start_date)) $type = 'reservation';
@@ -69,6 +69,8 @@ class ApartmentRepository{
         
         $apartments = [];
         while($row = pg_fetch_assoc($res)){
+            $owner = $this->userRepository->getUser($row['owner']);
+            $row['owner'] = ['mail' => $owner->mail, 'role' => $owner->role, "url" => $this->makeURLFromObject($owner)];
             $apartments[] = new ApartmentModel($row['id'], $row['address'], $row['area'], $row['owner'], $row['capacity'], $row['price'], $row['disponibility']);
         }
 
@@ -82,8 +84,6 @@ class ApartmentRepository{
         if($res == NULL){
             throw new BDDNotFoundException("Apartment not found");
         }
-        $owner = $this->userRepository->getUser($res->owner);
-        $res->owner = ['mail' => $owner->mail, 'role' => $owner->role, "url" => $this->makeURLFromObject($owner)];
 
         return $res;
     }
@@ -99,6 +99,8 @@ class ApartmentRepository{
 
         $apartments = [];
         while($row = pg_fetch_assoc($res)){
+            $owner = $this->userRepository->getUser($row['owner']);
+            $row['owner'] = ['mail' => $owner->mail, 'role' => $owner->role, "url" => $this->makeURLFromObject($owner)];
             $apartments[] = new ApartmentModel($row['id'], $row['address'], $row['area'], $row['owner'], $row['capacity'], $row['price'], $row['disponibility']);
         }
 
@@ -132,6 +134,10 @@ class ApartmentRepository{
         }
 
         $res = pg_fetch_assoc($res);
+
+        $owner = $this->userRepository->getUser($res['owner']);
+        $res['owner'] = ['mail' => $owner->mail, 'role' => $owner->role, "url" => $this->makeURLFromObject($owner)];
+        
         return new ApartmentModel($res['id'], $res['address'], $res['area'], $res['owner'], $res['capacity'], $res['price'], $res['disponibility']);
     }
 
