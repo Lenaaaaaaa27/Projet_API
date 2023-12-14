@@ -11,7 +11,7 @@ class AuthentificationService{
         $this->authentificationRepository = new AuthentificationRepository;
     }
 
-    public function login(stdClass $body):UserModel{
+    public function login(stdClass $body){
 
         $salt = "DJSOJQ02ddqodkCSQDzqdzdKOPDKSDkapodkP09D92KC2ie2I";
 
@@ -22,10 +22,14 @@ class AuthentificationService{
         $userModel->token = GenerateToken($userModel);
 
         if($this->authentificationRepository->AddToken($userModel))
-        return $userModel;
+
+        $token["token"] = $userModel->token;
+
+        return $token;
         }
 
-    public function logout():void{
-        if($this->authentificationRepository->deleteToken($id)) 
+    public function logout(string $token):void{
+
+        if($this->authentificationRepository->deleteToken($token));
     }
 }

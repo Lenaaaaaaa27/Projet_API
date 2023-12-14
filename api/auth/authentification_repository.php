@@ -21,8 +21,8 @@ class AuthentificationRepository{
     
     public function getUserByMail(string $mail, string $password):UserModel{
 
-        $query = pg_prepare($this->connection, "getUser", "SELECT * FROM \"USER\" WHERE mail = $1 AND password = $2");
-        $result = pg_execute($this->connection, "getUser", [$mail, $password]);
+        $query = pg_prepare($this->connection, "getUserByMail", "SELECT * FROM \"USER\" WHERE mail = $1 AND password = $2");
+        $result = pg_execute($this->connection, "getUserByMail", [$mail, $password]);
 
         $user = pg_fetch_assoc($result);
 
@@ -34,18 +34,25 @@ class AuthentificationRepository{
 
     }
 
+    public function getUserByToken(string $token){
+        $query = pg_prepare($this->connection, "getUserByToken", "SELECT * FROM \"USER\" WHERE token = $1");
+        $result = pg_execute($this->connection, "getUserByToken", [$token]);
+
+        return $result;
+    }
+
     public function AddToken(UserModel $userModel):object{
 
         $userModel->id = intval($userModel->id);
-        $query = pg_prepare($this->connection, "updateUser", "UPDATE \"USER\" SET token = $1 WHERE id = $2");
-        $result = pg_execute($this->connection, "updateUser", array($userModel->token, $userModel->id));
+        $query = pg_prepare($this->connection, "addToken", "UPDATE \"USER\" SET token = $1 WHERE id = $2");
+        $result = pg_execute($this->connection, "addToken", array($userModel->token, $userModel->id));
 
         return $result;
     }
     
-    public function deleteToken(int $id){
-        $query = pg_prepare($this->connection, "deleteToken", "UPDATE \"USER\" SET token = $1 WHERE id = $2");
-        $result = pg_execute($this->connection, "deleteToken", array(NULL, $id));
+    public function deleteToken(string $token){
+        $query = pg_prepare($this->connection, "deleteToken", "UPDATE \"USER\" SET token = $1 WHERE token = $2");
+        $result = pg_execute($this->connection, "deleteToken", array(NULL, $token));
         
         if(!$result){
             throw new BDDException("Could not execute the request");

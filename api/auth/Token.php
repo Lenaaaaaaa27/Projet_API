@@ -18,13 +18,11 @@ function GenerateToken(UserModel $UserModel):string{
     return $Encode;
 }
 
-function decodeToken(string $token): array{
+function decodeToken(string $token){
     $SecKey = 'Esgi2023Les2i1cvrmtlesMeilleurs';
-    $Header = apache_request_headers();
 
-    if($Header['Authorization']){
-        $Header = $Header['Authorization'];
-        $Decode = JWT::decode($Header, new Key($SecKey, 'HS256'));
+    if($token){
+        $Decode = JWT::decode($token, new Key($SecKey, 'HS256'));
     }
 
     return $Decode;
