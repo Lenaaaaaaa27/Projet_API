@@ -89,7 +89,7 @@ try {
     $res->setMessage($e->getMessage(), 404);
 } catch (ValidationException | ValueTakenException | BadRequestException | EmailAlreadyExist | FailConnexionAccount $e) {
     $res->setMessage($e->getMessage(), 400);
-} catch(ExpiredTokenException | NoToken $e){
+} catch(ExpiredTokenException | NoToken | TokenDoesntExistException $e){
     $res->setMessage($e->getMessage(), 401);
 } catch (Exception $e) {
     $res->setMessage("An error occured with the server.", 500);
