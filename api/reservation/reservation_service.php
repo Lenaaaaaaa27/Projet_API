@@ -2,25 +2,31 @@
 
 include_once 'reservation_model.php';
 include_once 'reservation_repository.php';
+include_once './api/user/user_repository.php';
+include_once './api/apartment/apartmentRepository.php';
 include_once 'commons/exceptions/service_exceptions.php';
 
 class ReservationService {
-    private $repository;
+    private $repositoryReservation;
+    private $repositoryUser;
+    private $repositoryApartment;
 
     function __construct() {
-        $this->repository = new ReservationRepository();
+        $this->repositoryReservation = new Reservationrepository();
+        $this->repositoryUser = new UserRepository();
+        $this->repositoryApartment = new ApartmentRepository();
 
     }
 
 
     function getReservations() : array {
 
-        return $this->repository->getReservations();
+        return $this->repositoryReservation->getReservations();
     }
 
     function getReservation(int $id) : ReservationModel {
         
-        return $this->repository->getReservation($id);
+        return $this->repositoryReservation->getReservation($id);
     }
 
     function createReservation(stdClass $body) : ReservationModel {
@@ -44,7 +50,10 @@ class ReservationService {
             throw new ValueTakenExcepiton("A reservation cannot be made for less than one day.");
         }
 
-        $existing = $this->repository->getReservationByDate($body->start_date, $body->end_date, $body->apartment,"0");
+        $user = $this->repositoryUser->getUser($body->renter);
+        $apartment = $this->repositoryApartment->getApartment($body->apartment);
+
+        $existing = $this->repositoryReservation->getReservationByDate($body->start_date, $body->start_date, $body->apartment,"0");
 
         if($existing) {
             throw new ValueTakenExcepiton("the apartment is already booked during this period");
@@ -53,7 +62,7 @@ class ReservationService {
         /* ajouter calcul du prix une fois les requete des apartment recupérer 
         */
         
-        return $this->repository->createReservation(new ReservationModel($body->start_date, $body->end_date, $body->price, $body->renter, $body->apartment,NULL));
+        return $this->repositoryReservation->createReservation(new ReservationModel($body->start_date, $body->end_date, $body->price, $body->renter, $body->apartment,NULL));
     }
 
     public function updateReservation($id, stdClass $body) : ReservationModel {
@@ -78,7 +87,7 @@ class ReservationService {
             throw new ValueTakenExcepiton("A reservation cannot be made for less than one day.");
         }
         
-        $existing = $this->repository->getReservationByDate($body->start_date, $body->start_date, $body->apartment,$id);
+        $existing = $this->repositoryReservation->getReservationByDate($body->start_date, $body->start_date, $body->apartment,$id);
 
         if($existing) {
             throw new ValueTakenExcepiton("the apartment is already booked during this period");
@@ -87,10 +96,10 @@ class ReservationService {
         /* ajouter calcul du prix une fois les requete des apartment recupérer 
         */
 
-        return $this->repository->updateReservation($id, new ReservationModel($body->start_date, $body->end_date, $body->price, $body->renter, $body->apartment,null));
+        return $this->repositoryReservation->updateReservation($id, new ReservationModel($body->start_date, $body->end_date, $body->price, $body->renter, $body->apartment,null));
     }
 
     public function deleteReservation(int $id): void { 
-        $this->repository->deleteReservation($id);
+        $this->repositoryReservation->deleteReservation($id);
     }
 }
