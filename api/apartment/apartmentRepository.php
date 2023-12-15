@@ -114,24 +114,38 @@ class ApartmentRepository{
         $values = [];
         foreach($apart as $attr => $value){
             if($value != NULL){
-                if(!$first){
+                if(!$first)
                     $query .= ", ";
-                }
-            $values[] = $value;
-            $query .= $attr . '=$' . count($values);
-            $first = false;
+                $values[] = $value;
+                $query .= $attr . '=$' . count($values);
+                $first = false;
             }
         }
         $query .= ' WHERE id='. $apart->id .' RETURNING *';
 
         $res = $this->query($query, $values);
-        if(!$res){
+        if(!$res)
             throw new BDDException(pg_last_error($this->db));
-        }
 
-        if(pg_affected_rows($res) == 0){
+        if(pg_affected_rows($res) == 0)
             throw new BDDNotFoundException("Apartment not found.");
-        }
+
+        $res = pg_fetch_assoc($res);
+
+        $owner = $this->userRepository->getUser($res['owner']);
+        $res['owner'] = ['mail' => $owner->mail, 'role' => $owner->role, "url" => $this->makeURLFromObject($owner)];
+        
+        return new ApartmentModel($res['id'], $res['address'], $res['area'], $res['owner'], $res['capacity'], $res['price'], $res['disponibility']);
+    }
+
+    public function updateSpecAttr($id, $attr, $value): ApartmentModel{
+        $query = 'UPDATE APARTMENT SET $1 = $2 WHERE $3 RETURNING *';
+        $res = $this->query($query, $attr, $value, $id);
+        if(!$res)
+            throw new BDDException(pg_last_error($this->db));
+
+        if(pg_affected_rows($res) == 0)
+            throw new BDDNotFoundException("Apartment not found.");
 
         $res = pg_fetch_assoc($res);
 
