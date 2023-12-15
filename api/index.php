@@ -4,7 +4,7 @@ include_once './auth/authentification_controller.php';
 include_once './reservation/reservation_controller.php';
 include_once './commons/request.php';
 include_once './commons/response.php';
-include_once './commons/middlewares/token_middleware.php';
+include_once './commons/middlewares/authorization_middleware.php';
 include_once './commons/middlewares/json_middleware.php';
 include_once './commons/exceptions/controller_exceptions.php';
 include_once './commons/exceptions/authorization_exceptions.php';
@@ -82,7 +82,7 @@ $res = new Response();
 try {
 
     json_middleware($req, $res);
-    tokenMiddleware($req, $res);
+    authorizationMiddleware($req, $res);
     
     router($req, $res);
 } catch (NotFoundException | EntityNotFoundException | BDDNotFoundException $e) {
@@ -91,6 +91,8 @@ try {
     $res->setMessage($e->getMessage(), 400);
 } catch(ExpiredTokenException | NoToken | TokenDoesntExistException $e){
     $res->setMessage($e->getMessage(), 401);
+} catch(AdminAccessException | OwnerAccessException $e){
+    $res->setMessage($e->getMessage(), 403);
 } catch (Exception $e) {
     $res->setMessage("An error occured with the server.", 500);
 }
