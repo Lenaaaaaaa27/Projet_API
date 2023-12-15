@@ -97,7 +97,6 @@ try {
     $res->setMessage("An error occured with the server.", 500);
 }
 
-
 // On envoie la réponse
 $res->send();
 ?>
