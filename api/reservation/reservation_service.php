@@ -37,9 +37,6 @@ class ReservationService {
         if (!isset($body->end_date)) {
             throw new ValidationException("Please provide an end date for your reservation !");
         }
-        if (!isset($body->price)) {
-            throw new ValidationException("Please provide a price for your reservation !");
-        }
         if (!isset($body->renter)) {
             throw new ValidationException("Please provide a renter for your reservation !");
         }
@@ -49,7 +46,6 @@ class ReservationService {
         if(strtotime($body->end_date) < strtotime($body->start_date) + (24 * 60 * 60)) {
             throw new ValueTakenException("A reservation cannot be made for less than one day.");
         }
-
         $existing = $this->repositoryReservation->getReservationByDate($body->start_date, $body->start_date, $body->apartment,"0");
 
         if($existing) {
@@ -72,16 +68,12 @@ class ReservationService {
         if (!isset($body->end_date)) {
             throw new ValidationException("Please provide an end date for your reservation !");
         }
-        if (!isset($body->price)) {
-            throw new ValidationException("Please provide a price for your reservation !");
-        }
         if (!isset($body->renter)) {
             throw new ValidationException("Please provide a renter for your reservation !");
         }
         if (!isset($body->apartment)) {
             throw new ValidationException("Please indicate an apartment for your reservation !");
         }
-
         if(strtotime($body->end_date) < strtotime($body->start_date) + (24 * 60 * 60)) {
             throw new ValueTakenException("A reservation cannot be made for less than one day.");
         }
