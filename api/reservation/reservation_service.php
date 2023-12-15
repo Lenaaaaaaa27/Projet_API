@@ -41,13 +41,13 @@ class ReservationService {
             throw new ValidationException("Please indicate an apartment for your reservation !");
         }
         if(strtotime($body->end_date) < strtotime($body->start_date) + (24 * 60 * 60)) {
-            throw new ValueTakenExcepiton("A reservation cannot be made for less than one day.");
+            throw new ValueTakenException("A reservation cannot be made for less than one day.");
         }
 
         $existing = $this->repository->getReservationByDate($body->start_date, $body->end_date, $body->apartment,"0");
 
         if($existing) {
-            throw new ValueTakenExcepiton("the apartment is already booked during this period");
+            throw new ValueTakenException("the apartment is already booked during this period");
         } 
 
         /* ajouter calcul du prix une fois les requete des apartment recupérer 
@@ -75,13 +75,13 @@ class ReservationService {
         }
 
         if(strtotime($body->end_date) < strtotime($body->start_date) + (24 * 60 * 60)) {
-            throw new ValueTakenExcepiton("A reservation cannot be made for less than one day.");
+            throw new ValueTakenException("A reservation cannot be made for less than one day.");
         }
         
         $existing = $this->repository->getReservationByDate($body->start_date, $body->start_date, $body->apartment,$id);
 
         if($existing) {
-            throw new ValueTakenExcepiton("the apartment is already booked during this period");
+            throw new ValueTakenException("the apartment is already booked during this period");
         } 
 
         /* ajouter calcul du prix une fois les requete des apartment recupérer 
