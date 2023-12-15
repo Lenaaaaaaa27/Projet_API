@@ -38,7 +38,7 @@ class AuthentificationRepository{
         $query = pg_prepare($this->connection, "getUserByToken", "SELECT * FROM \"USER\" WHERE token = $1");
         $result = pg_execute($this->connection, "getUserByToken", [$token]);
 
-        return $result;
+        return pg_fetch_assoc($result);
     }
 
     public function AddToken(UserModel $userModel):object{

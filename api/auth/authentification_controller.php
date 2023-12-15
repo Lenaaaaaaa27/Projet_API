@@ -1,5 +1,4 @@
 <?php
-include_once './auth/logout.php';
 include_once './auth/authentification_service.php';
 include_once './auth/Token.php';
 

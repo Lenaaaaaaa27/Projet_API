@@ -1,9 +1,9 @@
 <?php 
 
-include_once 'commons/request.php';
-include_once 'commons/response.php';
-include_once 'auth/Token.php';
-include_once 'commons/exceptions/authorization_exceptions.php';
+include_once './commons/request.php';
+include_once './commons/response.php';
+include_once './auth/Token.php';
+include_once './commons/exceptions/authorization_exceptions.php';
 include_once './auth/authentification_repository.php';
 
 function tokenMiddleware(&$req, &$res){
@@ -13,6 +13,7 @@ function tokenMiddleware(&$req, &$res){
     if($req->getUrl() == "/index.php/auth" && $req->getMethod() == 'POST' || $req->getUrl() == "/index.php/restpatrop/user" && $req->getMethod() == 'POST'){
         return;
     }    
+
     $token = $req->getHeaders()["Authorization"];
 
     if($token == NULL){
