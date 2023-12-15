@@ -22,6 +22,10 @@ class ApartmentService{
         return $this->repository->getApartmentsBy("disponibility","TRUE");
     }
 
+    public function getApartmentsByOwner($id): array{
+        return $this->repository->getApartmentsBy("owner", $id);
+    }
+
     public function createApartment(stdClass $body): ApartmentModel {
         $tempFlat = new ApartmentModel(NULL, NULL, NULL, NULL, NULL, NULL, NULL);
         foreach($tempFlat as $key => $value){
@@ -63,6 +67,10 @@ class ApartmentService{
         }
 
         return $this->repository->updateApartment($tempFlat);
+    }
+
+    public function switchDisponibityOn($id): ApartmentModel{
+        return $this->repository->updateSpecAttr($id, "disponibility", "NOT disponibility");
     }
 }
 ?>
