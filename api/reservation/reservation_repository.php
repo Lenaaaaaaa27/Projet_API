@@ -107,7 +107,7 @@ class ReservationRepository {
                                     );
 
         $created = pg_fetch_assoc($result);
-        return new ReservationModel($created['id'], $created['start_date'], $created['end_date'], $created['price'], $created['renter'], $created['apartment']);
+        return new ReservationModel($created['start_date'], $created['end_date'], $created['price'], $created['renter'], $created['apartment'], $created['id']);
     }
 
     public function updateReservation($id,ReservationModel $reservation): ReservationModel {
