@@ -44,8 +44,17 @@ function authorizationMiddleware(&$req, &$res){
 
     // Pour acceder à l'appli : que les proprio qui peuvent rendre dispo/indispo leurs appart (role : 1)
 
-    if($role != "1" && $userAgent == "restpatrop" && $path == "restpatrop"){
-        throw new OwnerAccessException("Vous n'avez pas l'accès à l'application respatrop");
+    if($userAgent == "restpatrop"){
+        if($role != "1" && $path == "restpatrop"){
+            throw new OwnerAccessException("Vous n'avez pas l'accès à l'application respatrop");
+        }
+    }else{
+        if($role != 2 && $path == "restpatrop" && ($req->getMethod() == 'PATCH' || $req->getMethod() == 'POST')){
+            throw new InternAccessException("Vous ne pouvez modifier ou ajouter un appartement");
+        }
     }
+    
+
+    
 
 }

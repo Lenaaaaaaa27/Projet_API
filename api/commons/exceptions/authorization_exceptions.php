@@ -41,3 +41,9 @@ class OwnerAccessException extends AccessException{
         parent::__construct($message, $code);
     }
 }
+
+class InternAccessException extends AccessException{
+    public function __construct($message = "An error occured.", $code = 403) {
+        parent::__construct($message, $code);
+    }
+}

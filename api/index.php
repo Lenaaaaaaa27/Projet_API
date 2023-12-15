@@ -91,7 +91,7 @@ try {
     $res->setMessage($e->getMessage(), 400);
 } catch(ExpiredTokenException | NoToken | TokenDoesntExistException $e){
     $res->setMessage($e->getMessage(), 401);
-} catch(AdminAccessException | OwnerAccessException $e){
+} catch(AdminAccessException | OwnerAccessException | InternAccessException $e){
     $res->setMessage($e->getMessage(), 403);
 } catch (Exception $e) {
     $res->setMessage("An error occured with the server.", 500);
