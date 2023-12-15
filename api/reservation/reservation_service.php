@@ -2,8 +2,8 @@
 
 include_once 'reservation_model.php';
 include_once 'reservation_repository.php';
-include_once './api/user/user_repository.php';
-include_once './api/apartment/apartmentRepository.php';
+include_once 'user/user_repository.php';
+include_once 'apartment/apartmentRepository.php';
 include_once 'commons/exceptions/service_exceptions.php';
 
 class ReservationService {
@@ -50,17 +50,16 @@ class ReservationService {
             throw new ValueTakenExcepiton("A reservation cannot be made for less than one day.");
         }
 
-        $user = $this->repositoryUser->getUser($body->renter);
-        $apartment = $this->repositoryApartment->getApartment($body->apartment);
-
         $existing = $this->repositoryReservation->getReservationByDate($body->start_date, $body->start_date, $body->apartment,"0");
 
         if($existing) {
             throw new ValueTakenExcepiton("the apartment is already booked during this period");
         } 
 
-        /* ajouter calcul du prix une fois les requete des apartment recupérer 
-        */
+        $user = $this->repositoryUser->getUser($body->renter);
+        $apartment = $this->repositoryApartment->getApartment($body->apartment);
+
+       $body->price = $apartment->price * ((( strtotime($body->end_date) - strtotime($body->start_date)))/(24 * 60 * 60));
         
         return $this->repositoryReservation->createReservation(new ReservationModel($body->start_date, $body->end_date, $body->price, $body->renter, $body->apartment,NULL));
     }
@@ -93,8 +92,11 @@ class ReservationService {
             throw new ValueTakenExcepiton("the apartment is already booked during this period");
         } 
 
-        /* ajouter calcul du prix une fois les requete des apartment recupérer 
-        */
+        $user = $this->repositoryUser->getUser($body->renter);
+        $apartment = $this->repositoryApartment->getApartment($body->apartment);
+
+        $body->price = $apartment->price * ((( strtotime($body->end_date) - strtotime($body->start_date)))/(24 * 60 * 60));
+        
 
         return $this->repositoryReservation->updateReservation($id, new ReservationModel($body->start_date, $body->end_date, $body->price, $body->renter, $body->apartment,null));
     }
