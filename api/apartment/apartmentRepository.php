@@ -122,25 +122,31 @@ class ApartmentRepository{
             }
         }
         $query .= ' WHERE id='. $apart->id .' RETURNING *';
-
         $res = $this->query($query, $values);
-        if(!$res)
-            throw new BDDException(pg_last_error($this->db));
 
-        if(pg_affected_rows($res) == 0)
-            throw new BDDNotFoundException("Apartment not found.");
+        $res = $this->checkUpdateQueryResult($res);
 
-        $res = pg_fetch_assoc($res);
-
-        $owner = $this->userRepository->getUser($res['owner']);
-        $res['owner'] = ['mail' => $owner->mail, 'role' => $owner->role, "url" => $this->makeURLFromObject($owner)];
-        
-        return new ApartmentModel($res['id'], $res['address'], $res['area'], $res['owner'], $res['capacity'], $res['price'], $res['disponibility']);
+        return $res;
     }
 
     public function updateSpecAttr($id, $attr, $value): ApartmentModel{
-        $query = 'UPDATE APARTMENT SET $1 = $2 WHERE $3 RETURNING *';
-        $res = $this->query($query, $attr, $value, $id);
+        $query = 'UPDATE APARTMENT SET '. $attr .' = $1 WHERE id = $2 RETURNING *';
+        $res = $this->query($query, [$value, $id]);
+
+        $res = $this->checkUpdateQueryResult($res);
+        
+        return $res;
+    }
+
+    public function switchDisponibility($id){
+        $query = 'UPDATE APARTMENT SET disponibility = NOT disponibility WHERE id = $1 RETURNING *';
+        $res = $this->query($query, [$id]);
+
+        $res = $this->checkUpdateQueryResult($res);
+        return $res;
+    }
+
+    private function checkUpdateQueryResult($res){
         if(!$res)
             throw new BDDException(pg_last_error($this->db));
 
@@ -151,7 +157,7 @@ class ApartmentRepository{
 
         $owner = $this->userRepository->getUser($res['owner']);
         $res['owner'] = ['mail' => $owner->mail, 'role' => $owner->role, "url" => $this->makeURLFromObject($owner)];
-        
+
         return new ApartmentModel($res['id'], $res['address'], $res['area'], $res['owner'], $res['capacity'], $res['price'], $res['disponibility']);
     }
 

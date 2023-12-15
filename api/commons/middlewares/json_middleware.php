@@ -5,7 +5,7 @@ include_once 'commons/exceptions/controller_exceptions.php';
 
 function json_middleware(&$req, &$res) {
     // Ignorer les reques qui n'ont pas de données
-    if ($req->getMethod() != "POST" && $req->getMethod() != "PATCH") {
+    if ($req->getMethod() != "POST" && $req->getMethod() != "PATCH" || $req->getPathAt(5) == 'switch') {
         return;
     }
 

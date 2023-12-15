@@ -70,7 +70,7 @@ class ApartmentService{
     }
 
     public function switchDisponibityOn($id): ApartmentModel{
-        return $this->repository->updateSpecAttr($id, "disponibility", "NOT disponibility");
+        return $this->repository->switchDisponibility($id);
     }
 }
 ?>

@@ -15,7 +15,7 @@ class ApartmentController{
     public function dispatch(Request $req, Response $res): void{
         switch($req->getMethod()){
             case 'GET':
-                    getMethodController($req, $res);
+                    $this->getMethodController($req, $res);
                 break;
 
             case 'POST':
@@ -45,7 +45,7 @@ class ApartmentController{
         }
     }
 
-    private function getController(Request $req, Response $res): void{
+    private function getMethodController(Request $req, Response $res): void{
         switch($req->getPathAt(4)){
             case 'free':
                 $res->setContent($this->service->getFreeApartments());
