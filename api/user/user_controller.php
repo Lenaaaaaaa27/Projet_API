@@ -43,7 +43,9 @@ class UserController{
     
             case 'PATCH':
                 if($req->getPathAt(2) == "back_office"){
-                    if (!isset($req->getBody()->id) || (!isset($req->getBody()->role))) {
+                    if (!isset($req->getBody()->id) || (!isset($req->getBody()->role)) 
+                    || isset($req->getBody()->mail) || isset($req->getBody()->password) 
+                    || !is_numeric($req->getBody()->id) || !is_numeric($req->getBody()->role)) {
                         throw new BadRequestException("Bad Request", 400);
                     }
                 }
@@ -52,11 +54,10 @@ class UserController{
                     if (!isset($req->getBody()->id) || !isset($req->getBody()->mail)
                     || !isset($req->getBody()->password) || $req->getBody()->role != NULL){
                         throw new BadRequestException("Bad Request", 400);
+                    }else{   
+                        $req->getBody()->role = NULL;
                     }
-
-                    $req->getBody()->role = NULL;
                 }
-                
     
                 try {
                     $res->setContent($this->userService->updateUser($req->getBody()));

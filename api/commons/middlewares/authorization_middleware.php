@@ -66,6 +66,9 @@ function authorizationMiddleware(&$req, &$res){
 
             if($req->getMethod() == 'PATCH'){
                 $idBody = $req->getBody()->id;
+                if(!is_numeric($idBody)){
+                    throw new ForbiddenUpdateUser("L'id est invalide");
+                }
                 if($idBody != $id){
                     throw new ForbiddenUpdateUser("Tu n'as pas le droit de modifier un autre compte que le tien");
                 }
