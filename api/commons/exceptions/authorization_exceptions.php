@@ -47,3 +47,15 @@ class InternAccessException extends AccessException{
         parent::__construct($message, $code);
     }
 }
+
+class ForbiddenUpdateUser extends AccessException{
+    public function __construct($message = "An error occured.", $code = 403) {
+        parent::__construct($message, $code);
+    }
+}
+
+class ForbiddenDeleteUser extends AccessException{
+    public function __construct($message = "An error occured.", $code = 403) {
+        parent::__construct($message, $code);
+    }
+}
