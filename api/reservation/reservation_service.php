@@ -50,7 +50,7 @@ class ReservationService {
         if(strtotime($body->end_date) < strtotime($body->start_date) + (24 * 60 * 60)) {
             throw new ValueTakenException("A reservation cannot be made for less than one day.");
         }
-        $existing = $this->repositoryReservation->getReservationsBetween($body->start_date, $body->start_date, $body->apartment,"0");
+        $existing = $this->repositoryReservation->getReservationByDate($body->start_date, $body->start_date, $body->apartment,"0");
 
         if($existing) {
             throw new ValueTakenException("the apartment is already booked during this period");
