@@ -26,33 +26,20 @@ class UserService{
         $body->password = $body->password . $salt;
         $body->password = hash('sha256', $body->password);
         
-        $users = $this->repository->getUsers();
-
-        foreach ($users as $user) {
-            if ($user->mail === $body->mail) {
-                throw new EmailAlreadyExist("Email is already used !");
-            }
+        if($this->repository->getUserByMail($body->mail)){
+            throw new EmailAlreadyExists("Email is already used !");
         }
         
-        return $this->repository->createUser(new UserModel($body->mail, $body->password, 0, NULL));
+        return $this->repository->createUser(new UserModel($body->mail, $body->password, 0));
     }
 
     function updateUser(stdClass $body): UserModel {
         $salt = "DJSOJQ02ddqodkCSQDzqdzdKOPDKSDkapodkP09D92KC2ie2I";
 
-        $body->current_password = $body->current_password . $salt;
-        $body->current_password = hash('sha256', $body->current_password);
-
-        $user = $this->repository->getUser(intval($body->id));
-
-        if ($user->password != $body->current_password) {
-            throw new FailConnexionAccount("Mail or/and password is wrong !");
-        }
-
-        $body->new_password = $body->new_password . $salt;
-        $body->new_password = hash('sha256', $body->new_password);
-
-        return $this->repository->updateUser(new UserModel($body->new_mail, $body->new_password, $body->role, $body->id));
+        $body->password = $body->password . $salt;
+        $body->password = hash('sha256', $body->password);
+        
+        return $this->repository->updateUser(new UserModel($body->mail, $body->password, $body->role, $body->id));
     }
 
     function deleteUser(int $id): void {

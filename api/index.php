@@ -87,7 +87,7 @@ try {
     router($req, $res);
 } catch (NotFoundException | EntityNotFoundException | BDDNotFoundException $e) {
     $res->setMessage($e->getMessage(), 404);
-} catch (ValidationException | ValueTakenException | BadRequestException | EmailAlreadyExist | FailConnexionAccount $e) {
+} catch (ValidationException | ValueTakenException | BadRequestException | EmailAlreadyExists | FailConnexionAccount $e) {
     $res->setMessage($e->getMessage(), 400);
 } catch(ExpiredTokenException | NoToken | TokenDoesntExistException $e){
     $res->setMessage($e->getMessage(), 401);

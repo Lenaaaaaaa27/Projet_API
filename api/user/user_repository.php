@@ -64,13 +64,26 @@ class UserRepository{
         return $Users;
     }
 
+    public function getUserByMail(string $mail){
+
+        $query = pg_prepare($this->connection, "getUserByMail", "SELECT * FROM \"USER\" WHERE mail = $1");
+        $result = pg_execute($this->connection, "getUserByMail", [$mail]);
+
+        return pg_fetch_assoc($result);
+    }
+
     public function updateUser(UserModel $userModel): UserModel{
-        $query = pg_prepare($this->connection, "updateUser", "UPDATE \"USER\" SET mail = $1, password = $2, role = $3 WHERE id = $4 RETURNING id, mail, password, role, token");
-        $result = pg_execute($this->connection, "updateUser", array($userModel->mail, $userModel->password, $userModel->role, $userModel->id));
+        if(!empty($userModel->role)){
+            $query = pg_prepare($this->connection, "updateUser", "UPDATE \"USER\" SET mail = $1, password = $2, role = $3 WHERE id = $4 RETURNING id, mail, password, role, token");
+            $result = pg_execute($this->connection, "updateUser", array($userModel->mail, $userModel->password, $userModel->role, $userModel->id));
+        }else{
+            $query = pg_prepare($this->connection, "updateUser", "UPDATE \"USER\" SET mail = $1, password = $2 WHERE id = $3 RETURNING id, mail, password, role, token");
+            $result = pg_execute($this->connection, "updateUser", array($userModel->mail, $userModel->password, $userModel->id));
+        }
 
         $user = pg_fetch_assoc($result);
 
-        return new UserModel($user["mail"], $user["password"], $user["role"], $user["id"], $user["token"]);
+        return new UserModel($user["mail"], $user["password"], $user["role"], $user["id"], NULL);
     }
 
     public function deleteUser(int $id){
