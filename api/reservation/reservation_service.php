@@ -52,7 +52,7 @@ class ReservationService {
             throw new ValueTakenException("the apartment is already booked during this period");
         } 
 
-        $user = $this->repositoryUser->getUser($body->renter);
+        $this->repositoryUser->getUser($body->renter);
         $apartment = $this->repositoryApartment->getApartment($body->apartment);
 
        $body->price = $apartment->price * ((( strtotime($body->end_date) - strtotime($body->start_date)))/(24 * 60 * 60));
@@ -84,7 +84,7 @@ class ReservationService {
             throw new ValueTakenException("the apartment is already booked during this period");
         } 
 
-        $user = $this->repositoryUser->getUser($body->renter);
+        $this->repositoryUser->getUser($body->renter);
         $apartment = $this->repositoryApartment->getApartment($body->apartment);
 
         $body->price = $apartment->price * ((( strtotime($body->end_date) - strtotime($body->start_date)))/(24 * 60 * 60));
