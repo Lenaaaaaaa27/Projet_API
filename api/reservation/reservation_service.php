@@ -41,6 +41,9 @@ class ReservationService {
         if (!isset($body->end_date)) {
             throw new ValidationException("Please provide an end date for your reservation !");
         }
+        if(!$this->validDate($body->start_date) || !$this->validDate($body->end_date)) {
+            throw new ValidationException("date format is invalid.");
+        }
         if (!isset($body->renter)) {
             throw new ValidationException("Please provide a renter for your reservation !");
         }
@@ -100,4 +103,10 @@ class ReservationService {
     public function deleteReservation(int $id): void { 
         $this->repositoryReservation->deleteReservation($id);
     }
+
+    public function validDate($date, $format = 'Y-m-d'):bool{
+        if(!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) return false;
+        $dt = DateTime::createFromFormat($format, $date);
+        return $dt->format($format) === $date;
+      }
 }

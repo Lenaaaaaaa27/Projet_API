@@ -88,7 +88,8 @@ function dispatch(Request $req, Response $res): void {
     }
 
 
-    function validDate($date, $format = 'Y-m-d'):bool{
+    public function validDate($date, $format = 'Y-m-d'):bool{
+        if(!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) return false;
         $dt = DateTime::createFromFormat($format, $date);
         return $dt->format($format) === $date;
       }
