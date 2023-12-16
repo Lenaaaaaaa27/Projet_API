@@ -24,6 +24,10 @@ class ReservationService {
         return $this->repositoryReservation->getReservations();
     }
 
+    function getReservationsBetween($start_date, $end_date) : array {
+        return $this->repositoryReservation->getReservationsBetween($start_date, $end_date);
+    }
+
     function getReservation(int $id) : ReservationModel {
         
         return $this->repositoryReservation->getReservation($id);
@@ -46,7 +50,7 @@ class ReservationService {
         if(strtotime($body->end_date) < strtotime($body->start_date) + (24 * 60 * 60)) {
             throw new ValueTakenException("A reservation cannot be made for less than one day.");
         }
-        $existing = $this->repositoryReservation->getReservationByDate($body->start_date, $body->start_date, $body->apartment,"0");
+        $existing = $this->repositoryReservation->getReservationsBetween($body->start_date, $body->start_date, $body->apartment,"0");
 
         if($existing) {
             throw new ValueTakenException("the apartment is already booked during this period");
@@ -78,7 +82,7 @@ class ReservationService {
             throw new ValueTakenException("A reservation cannot be made for less than one day.");
         }
         
-        $existing = $this->repositoryReservation->getReservationByDate($body->start_date, $body->start_date, $body->apartment,$id);
+        $existing = $this->repositoryReservation->getReservationsBetween($body->start_date, $body->start_date, $body->apartment,$id);
 
         if($existing) {
             throw new ValueTakenException("the apartment is already booked during this period");
