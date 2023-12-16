@@ -27,11 +27,11 @@ CREATE TABLE RESERVATION(
 
 -- Add five users
 INSERT INTO "USER" (mail, password, role, token) VALUES
-    ('user1@example.com', 'password1', 1, NULL),
-    ('user2@example.com', 'password2', 2, NULL),
-    ('user3@example.com', 'password3', 1, NULL),
-    ('user4@example.com', 'password4', 2, NULL),
-    ('user5@example.com', 'password5', 1, NULL);
+    ('admin@example.com', '50f456c2dcd24e763fb49c5ec2fd5eaf7b57714015bdf94074f5ef40192c3bb2', 3, NULL),
+    ('user2@example.com', 'dbcbf2eb12f36623e78c51c672acb590b43e606203a8c8c151346582b31f7d5a', 2, NULL),
+    ('user3@example.com', 'a8a4c021e56d9b770907b42c9e4b867d8e78e3d12cdc5f1f575d7313d1731d85', 1, NULL),
+    ('user4@example.com', '2acd1f0d60b3ae479ad13c1ae9f61384f7db318bc26bb2a39ba840a01106527c', 2, NULL),
+    ('user5@example.com', '91a22c7ec7b6f79d200a665cb3a84bbdbb54200a42015befcad313873bd2edf9', 1, NULL);
 
 -- Add five apartments
 INSERT INTO APARTMENT (area, capacity, address, disponibility, price, owner) VALUES
