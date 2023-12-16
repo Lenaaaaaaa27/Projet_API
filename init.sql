@@ -27,7 +27,7 @@ CREATE TABLE RESERVATION(
 
 -- Add five users
 INSERT INTO "USER" (mail, password, role, token) VALUES
-    ('admin@example.com', 'admin', 3, NULL),
+    ('user1@example.com', 'password1', 1, NULL),
     ('user2@example.com', 'password2', 2, NULL),
     ('user3@example.com', 'password3', 1, NULL),
     ('user4@example.com', 'password4', 2, NULL),
@@ -47,4 +47,4 @@ INSERT INTO RESERVATION (start_date, end_date, price, renter, apartment) VALUES
     ('2023-02-15', '2023-02-20', 600, 1, 2),
     ('2023-03-10', '2023-03-13', 360, 3, 3),
     ('2023-04-05', '2023-04-12', 1400, 4, 4),
-    ('2023-04-015', '2023-04-25', 800, 5, 5);
+    ('2023-04-15', '2023-04-25', 800, 5, 5);
