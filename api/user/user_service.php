@@ -34,7 +34,7 @@ class UserService{
             }
         }
         
-        return $this->repository->createUser(new UserModel($body->mail, $body->password, $body->role, NULL));
+        return $this->repository->createUser(new UserModel($body->mail, $body->password, 0, NULL));
     }
 
     function updateUser(stdClass $body): UserModel {
