@@ -11,6 +11,7 @@ function authorizationMiddleware(&$req, &$res){
     $authentificationRepository = new AuthentificationRepository();
     $url = $req->getUrl();
     $path = $req->getPathAt(2);
+    $user = $req->getPathAt(3);
 
     if($url == "/index.php/auth" && $req->getMethod() == 'POST' || $url == "/index.php/restpatrop/user" && $req->getMethod() == 'POST'){
         return;
@@ -27,12 +28,15 @@ function authorizationMiddleware(&$req, &$res){
         throw new TokenDoesntExistException("Token doesn't exist");
     }
     
-    $time = decodeToken($token)->time;
-    $role = decodeToken($token)->role;
+    $decodeToken = decodeToken($token);
+    $time = $decodeToken->time;
 
     if($time < time()){
         throw new ExpiredTokenException("Token is expired");
     }    
+
+    $role = $decodeToken->role;
+    $id = $decodeToken->id;
 
     // On verifie les roles
 
@@ -48,9 +52,26 @@ function authorizationMiddleware(&$req, &$res){
         if($role != "1" && $path == "restpatrop"){
             throw new OwnerAccessException("Vous n'avez pas l'accès à l'application respatrop");
         }
-    }else{
-        if($role != 2 && $path == "restpatrop" && ($req->getMethod() == 'PATCH' || $req->getMethod() == 'POST')){
+    }elseif($path == "restpatrop"){
+
+        if($role != 2 && ($req->getMethod() == 'PATCH' || $req->getMethod() == 'POST')){
             throw new InternAccessException("Vous ne pouvez modifier ou ajouter un appartement");
+        }
+
+        if($user == "user"){
+            if($req->getMethod() == 'PATCH'){
+                $idBody = $req->getBody()->id;
+                if($idBody != $id){
+                    throw new ForbiddenUpdateUser("Tu n'as pas le droit de modifier un autre compte que le tiens");
+                }
+            }
+
+            if($req->getMethod() == 'DELETE'){
+                $idUrl = $req->getPathAt(4);
+                if($idUrl != $id){
+                    throw new ForbiddenDeleteUser("Tu n'as pas le droit de modifier un autre compte que le tiens");
+                }
+            }
         }
     }
     
