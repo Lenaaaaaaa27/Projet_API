@@ -17,6 +17,8 @@ class UserController{
                 
                 if ($req->getPathAt(4) !== "" && is_string($req->getPathAt(4))) {
                     try {
+                        if(!is_numeric($req->getPathAt(4))) 
+                            throw new BadRequestException("id is not valid!.");
                        $res->setContent($this->userService->getUser(intval($req->getPathAt(4))));
                     } catch (HTTPException $e) {
                         $res->setContent($e->getMessage(), $e->getCode());

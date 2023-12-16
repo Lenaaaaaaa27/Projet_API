@@ -17,6 +17,9 @@ function dispatch(Request $req, Response $res): void {
     switch($req->getMethod()) {
         case 'GET':
             if ($req->getPathAt(4) !== "" && is_string($req->getPathAt(4))) {
+                if(!is_numeric($req->getPathAt(4))) 
+                    throw new BadRequestException("id is not valid!.");
+
                 $res->setContent($this->getReservation($req->getPathAt(4)));
             } else {
                 $res->setContent($this->getReservations());
