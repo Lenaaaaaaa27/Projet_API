@@ -38,7 +38,12 @@ class UserService{
 
         $body->password = $body->password . $salt;
         $body->password = hash('sha256', $body->password);
-        
+
+        if(!empty($body->mail)){
+            if($this->repository->getUserByMail($body->mail)){
+                throw new EmailAlreadyExists("Email is already used !");
+            }
+        }
         return $this->repository->updateUser(new UserModel($body->mail, $body->password, $body->role, $body->id));
     }
 

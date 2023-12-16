@@ -53,8 +53,7 @@ function authorizationMiddleware(&$req, &$res){
             throw new OwnerAccessException("Vous n'avez pas l'accès à l'application respatrop");
         }
     }elseif($path == "restpatrop"){
-
-        if($role != 2 && ($req->getMethod() == 'PATCH' || $req->getMethod() == 'POST')){
+        if($role != 2 && ($req->getMethod() == 'PATCH' || $req->getMethod() == 'POST') && $req->getPathAt(3) == "apartment"){
             throw new InternAccessException("Vous ne pouvez modifier ou ajouter un appartement");
         }
 

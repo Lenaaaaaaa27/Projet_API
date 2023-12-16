@@ -42,7 +42,7 @@ function dispatch(Request $req, Response $res): void {
             break;
 
         case 'DELETE':
-            if ($req->getPathAt(4) === "") {
+            if ($req->getPathAt(4) === "" || !is_numeric($req->getPathAt(4))) {
                 throw new BadRequestException("Please provide an ID for the reservation to delete.");
             }
             $this->deleteReservation($req->getPathAt(4));

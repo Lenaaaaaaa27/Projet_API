@@ -13,7 +13,7 @@ class FailConnexionAccount extends ServiceException{
     }
 }
 
-class EmailAlreadyExist extends ValueTakenException{
+class EmailAlreadyExists extends ValueTakenException{
     public function __construct($message = "Can't add User because email is already used") {
         parent::__construct(message: $message);
     }

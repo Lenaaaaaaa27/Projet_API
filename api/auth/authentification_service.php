@@ -18,7 +18,7 @@ class AuthentificationService{
         $body->password = $body->password . $salt;
         $body->password = hash('sha256', $body->password);
 
-        $userModel = $this->authentificationRepository->getUserByMail($body->mail, $body->password);
+        $userModel = $this->authentificationRepository->VerifLogin($body->mail, $body->password);
         $userModel->token = GenerateToken($userModel);
 
         if($this->authentificationRepository->AddToken($userModel))

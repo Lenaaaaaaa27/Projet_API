@@ -29,7 +29,7 @@ class UserRepository{
 
         $user = pg_fetch_assoc($result);
 
-        return new UserModel($user["mail"], $user["password"], $user["role"], $user["id"], NULL);
+        return new UserModel($user["mail"], NULL, $user["role"], $user["id"], NULL);
     }
 
     public function getUser(int $id): UserModel{
@@ -45,7 +45,7 @@ class UserRepository{
             throw new NotFoundException("User not found.");
         }
 
-        return new UserModel($user["mail"], $user["password"], $user["role"], $user["id"], $user["token"]);
+        return new UserModel($user["mail"], NULL, $user["role"], $user["id"], NULL);
     }
 
     public function getUsers():array{
@@ -58,7 +58,7 @@ class UserRepository{
         }
 
         while($row = pg_fetch_assoc($query)){
-            $Users[] = new UserModel($row["mail"], $row["password"], $row["role"], $row["id"], $row["token"]);
+            $Users[] = new UserModel($row["mail"], NULL, $row["role"], $row["id"], NULL);
         }
 
         return $Users;
@@ -73,9 +73,10 @@ class UserRepository{
     }
 
     public function updateUser(UserModel $userModel): UserModel{
-        if(!empty($userModel->role)){
-            $query = pg_prepare($this->connection, "updateUser", "UPDATE \"USER\" SET mail = $1, password = $2, role = $3 WHERE id = $4 RETURNING id, mail, password, role, token");
-            $result = pg_execute($this->connection, "updateUser", array($userModel->mail, $userModel->password, $userModel->role, $userModel->id));
+        
+        if($userModel->role == NULL){
+            $query = pg_prepare($this->connection, "updateUserByAdmin", "UPDATE \"USER\" SET role = $1 WHERE id = $2 RETURNING id, mail, password, role, token");
+            $result = pg_execute($this->connection, "updateUserByAdmin", array($userModel->role, $userModel->id));
         }else{
             $query = pg_prepare($this->connection, "updateUser", "UPDATE \"USER\" SET mail = $1, password = $2 WHERE id = $3 RETURNING id, mail, password, role, token");
             $result = pg_execute($this->connection, "updateUser", array($userModel->mail, $userModel->password, $userModel->id));
@@ -83,7 +84,11 @@ class UserRepository{
 
         $user = pg_fetch_assoc($result);
 
-        return new UserModel($user["mail"], $user["password"], $user["role"], $user["id"], NULL);
+        if($user["id"] == NULL){
+            throw new NotFoundException("User not found.");
+        }
+
+        return new UserModel($user["mail"], NULL, $user["role"], $user["id"], NULL);
     }
 
     public function deleteUser(int $id){

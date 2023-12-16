@@ -19,7 +19,7 @@ class AuthentificationRepository{
         }
     }
     
-    public function getUserByMail(string $mail, string $password):UserModel{
+    public function VerifLogin(string $mail, string $password):UserModel{
 
         $query = pg_prepare($this->connection, "getUserByMail", "SELECT * FROM \"USER\" WHERE mail = $1 AND password = $2");
         $result = pg_execute($this->connection, "getUserByMail", [$mail, $password]);

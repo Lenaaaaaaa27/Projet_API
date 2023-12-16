@@ -58,7 +58,7 @@ class UserController{
     
             case 'DELETE':
 
-                if ($req->getPathAt(3) === "") {
+                if ($req->getPathAt(3) === "" || !is_numeric($req->getPathAt(4))) {
                     throw new BadRequestException("Please provide an ID for the user to delete.");
                 }
 
