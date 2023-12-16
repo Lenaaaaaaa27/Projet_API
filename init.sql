@@ -27,7 +27,7 @@ CREATE TABLE RESERVATION(
 
 -- Add five users
 INSERT INTO "USER" (mail, password, role, token) VALUES
-    ('user1@example.com', 'password1', 1, NULL),
+    ('admin@example.com', 'admin', 3, NULL),
     ('user2@example.com', 'password2', 2, NULL),
     ('user3@example.com', 'password3', 1, NULL),
     ('user4@example.com', 'password4', 2, NULL),
