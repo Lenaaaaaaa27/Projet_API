@@ -14,8 +14,13 @@ function authorizationMiddleware(&$req, &$res){
     $user = $req->getPathAt(3);
 
     if($url == "/index.php/auth" && $req->getMethod() == 'POST' || $url == "/index.php/restpatrop/user" && $req->getMethod() == 'POST'){
+        
+        $salt = "DJSOJQ02ddqodkCSQDzqdzdKOPDKSDkapodkP09D92KC2ie2I";
+    
+        $req->getBody()->password = $req->getBody()->password . $salt;
+        $req->getBody()->password = hash('sha256', $req->getBody()->password);
         return;
-    }    
+    }
 
     $token = $req->getHeaders()["Authorization"];
     $userAgent = $req->getHeaders()["User-Agent"];
@@ -58,17 +63,26 @@ function authorizationMiddleware(&$req, &$res){
         }
 
         if($user == "user"){
+
             if($req->getMethod() == 'PATCH'){
                 $idBody = $req->getBody()->id;
                 if($idBody != $id){
-                    throw new ForbiddenUpdateUser("Tu n'as pas le droit de modifier un autre compte que le tiens");
+                    throw new ForbiddenUpdateUser("Tu n'as pas le droit de modifier un autre compte que le tien");
                 }
+            }
+
+            if($req->getMethod() == 'PATCH' || $req->getMethod() == 'POST'){
+
+                $salt = "DJSOJQ02ddqodkCSQDzqdzdKOPDKSDkapodkP09D92KC2ie2I";
+    
+                $req->getBody()->password = $req->getBody()->password . $salt;
+                $req->getBody()->password = hash('sha256', $req->getBody()->password);
             }
 
             if($req->getMethod() == 'DELETE'){
                 $idUrl = $req->getPathAt(4);
                 if($idUrl != $id){
-                    throw new ForbiddenDeleteUser("Tu n'as pas le droit de modifier un autre compte que le tiens");
+                    throw new ForbiddenDeleteUser("Tu n'as pas le droit de supprimer un autre compte que le tien");
                 }
             }
         }

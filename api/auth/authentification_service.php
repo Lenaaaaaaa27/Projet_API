@@ -13,11 +13,6 @@ class AuthentificationService{
 
     public function login(stdClass $body){
 
-        $salt = "DJSOJQ02ddqodkCSQDzqdzdKOPDKSDkapodkP09D92KC2ie2I";
-
-        $body->password = $body->password . $salt;
-        $body->password = hash('sha256', $body->password);
-
         $userModel = $this->authentificationRepository->VerifLogin($body->mail, $body->password);
         $userModel->token = GenerateToken($userModel);
 

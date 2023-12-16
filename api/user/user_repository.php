@@ -74,7 +74,7 @@ class UserRepository{
 
     public function updateUser(UserModel $userModel): UserModel{
         
-        if($userModel->role == NULL){
+        if(!empty($userModel->role)){
             $query = pg_prepare($this->connection, "updateUserByAdmin", "UPDATE \"USER\" SET role = $1 WHERE id = $2 RETURNING id, mail, password, role, token");
             $result = pg_execute($this->connection, "updateUserByAdmin", array($userModel->role, $userModel->id));
         }else{

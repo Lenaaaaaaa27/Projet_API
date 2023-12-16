@@ -20,27 +20,17 @@ class UserService{
     }
 
     function createUser(stdClass $body): UserModel {
-
-        $salt = "DJSOJQ02ddqodkCSQDzqdzdKOPDKSDkapodkP09D92KC2ie2I";
-
-        $body->password = $body->password . $salt;
-        $body->password = hash('sha256', $body->password);
-        
         if($this->repository->getUserByMail($body->mail)){
             throw new EmailAlreadyExists("Email is already used !");
         }
-        
         return $this->repository->createUser(new UserModel($body->mail, $body->password, 0));
     }
 
     function updateUser(stdClass $body): UserModel {
-        $salt = "DJSOJQ02ddqodkCSQDzqdzdKOPDKSDkapodkP09D92KC2ie2I";
-
-        $body->password = $body->password . $salt;
-        $body->password = hash('sha256', $body->password);
-
+        
         if(!empty($body->mail)){
-            if($this->repository->getUserByMail($body->mail)){
+            $id = $this->repository->getUserByMail($body->mail)["id"];
+            if($body->id != $id && $id != NULL){
                 throw new EmailAlreadyExists("Email is already used !");
             }
         }

@@ -31,7 +31,7 @@ class UserController{
     
             case 'POST':
                 if (!$req->getBody()) {
-                    $res->setMessage("Bad Request", 400);
+                    throw new BadRequestException("Bad Request", 400);
                 }
     
                 try {
@@ -42,12 +42,21 @@ class UserController{
                 break;
     
             case 'PATCH':
-    
-                if (!isset($req->getBody()->new_password) && !isset($req->getBody()->current_password) 
-                    && !isset($req->getBody()->new_mail) && !isset($req->getBody()->current_mail)
-                    && !isset($req->getBody()->id) && !isset($req->getBody()->role)) {
-                        $res->setMessage("Bad Request", 400);
+                if($req->getPathAt(2) == "back_office"){
+                    if (!isset($req->getBody()->id) || (!isset($req->getBody()->role))) {
+                        throw new BadRequestException("Bad Request", 400);
+                    }
                 }
+                
+                if($req->getPathAt(2) == "restpatrop"){
+                    if (!isset($req->getBody()->id) || !isset($req->getBody()->mail)
+                    || !isset($req->getBody()->password) || $req->getBody()->role != NULL){
+                        throw new BadRequestException("Bad Request", 400);
+                    }
+
+                    $req->getBody()->role = NULL;
+                }
+                
     
                 try {
                     $res->setContent($this->userService->updateUser($req->getBody()));
