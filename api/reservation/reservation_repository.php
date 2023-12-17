@@ -34,9 +34,6 @@ class ReservationRepository {
         return $result;
     }
 
-     /**
-    * @return reservationModel[]
-    */
     public function getReservations(): array {
         $query =  "SELECT * FROM RESERVATION ORDER BY id DESC";
         $result = $this->query($query);
@@ -49,10 +46,6 @@ class ReservationRepository {
         return $reservations;
     }
 
-
-    /**
-    * @return reservationModel
-    */
     public function getReservation(int $id): reservationModel {
         $query =  "SELECT * FROM RESERVATION WHERE id = $1";
         $result = $this->query($query, $id);
@@ -82,6 +75,21 @@ class ReservationRepository {
         $result = $this->query($query, $apartment, $start_date, $end_date,$reservationId);
 
         return pg_fetch_assoc($result);
+    }
+
+    public function getReservationsBetween(string $start_date, string $end_date): mixed {
+        $query = "SELECT * FROM RESERVATION WHERE 
+        start_date BETWEEN $1 AND $2
+        AND end_date BETWEEN $1 AND $2";
+        
+        $result = $this->query($query, $start_date, $end_date);
+
+        $reservations = [];
+        while ($row = pg_fetch_assoc($result)) {
+           $reservations[] = new ReservationModel($row['start_date'], $row['end_date'], $row['price'], $row['renter'], $row['apartment'],$row['id']);
+        }
+
+        return $reservations;
     }
 
     public function deleteReservation(int $id): void {

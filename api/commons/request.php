@@ -41,6 +41,17 @@ class Request {
         return $uri[$index];
     }
 
+    function getQueryParams(): array {
+        $queryParams = [];
+        $queryString = parse_url($this->url, PHP_URL_QUERY);
+
+        if ($queryString) {
+            parse_str($queryString, $queryParams);
+        }
+
+        return $queryParams;
+    }
+
     /**
     * @param mixed $body
     */
