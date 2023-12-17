@@ -44,10 +44,10 @@ class ReservationService {
         if(!$this->validDate($body->start_date) || !$this->validDate($body->end_date)) {
             throw new ValidationException("date format is invalid.");
         }
-        if (!isset($body->renter)) {
+        if (!isset($body->renter) || !is_numeric($body->renter)) {
             throw new ValidationException("Please provide a renter for your reservation !");
         }
-        if (!isset($body->apartment)) {
+        if (!isset($body->apartment) || !is_numeric($body->apartment)) {
             throw new ValidationException("Please indicate an apartment for your reservation !");
         }
         if(strtotime($body->end_date) < strtotime($body->start_date) + (24 * 60 * 60)) {
@@ -75,10 +75,10 @@ class ReservationService {
         if (!isset($body->end_date)) {
             throw new ValidationException("Please provide an end date for your reservation !");
         }
-        if (!isset($body->renter)) {
+        if (!isset($body->renter) || !is_numeric($body->renter)) {
             throw new ValidationException("Please provide a renter for your reservation !");
         }
-        if (!isset($body->apartment)) {
+        if (!isset($body->apartment) || !is_numeric($body->apartment)) {
             throw new ValidationException("Please indicate an apartment for your reservation !");
         }
         if(strtotime($body->end_date) < strtotime($body->start_date) + (24 * 60 * 60)) {
