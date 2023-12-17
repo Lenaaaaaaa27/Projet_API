@@ -13,7 +13,7 @@ class ReservationController {
         $this->service = new ReservationService();
     }
 
-function dispatch(Request $req, Response $res): void {
+function dispatch(Request $req, Response $res): mixed {
     switch($req->getMethod()) {
         case 'GET':
             if ($req->getPathAt(4) === "between" && is_string($req->getPathAt(4))) {
@@ -21,22 +21,21 @@ function dispatch(Request $req, Response $res): void {
                 if(!$this->validDate($params["start_date"]) || !$this->validDate($params["end_date"])) 
                     throw new BadRequestException("date format is invalid.");
 
-                $res->setContent($this->getReservationsBetween($params["start_date"],$params["end_date"]));
+                $result = $this->getReservationsBetween($params["start_date"],$params["end_date"]);
             } else if ($req->getPathAt(4) !== "" && is_string($req->getPathAt(4))) {
                 if(!is_numeric($req->getPathAt(4))) 
                     throw new BadRequestException("id is not valid.");
 
-                $res->setContent($this->getReservation($req->getPathAt(4)));
+                $result = $this->getReservation($req->getPathAt(4));
             }
              else {
-                $res->setContent($this->getReservations());
+                $result = $this->getReservations();
             }
             break;
 
         case 'POST':
             
             $result = $this->postReservation($req->getBody());
-            $res->setContent($result);
             break;
 
         case 'PATCH':
@@ -45,7 +44,6 @@ function dispatch(Request $req, Response $res): void {
             }
             
             $result = $this->patchReservation($req->getPathAt(4), $req->getBody());
-            $res->setContent($result, 200); 
             break;
 
         case 'DELETE':
@@ -53,9 +51,11 @@ function dispatch(Request $req, Response $res): void {
                 throw new BadRequestException("Please provide an ID for the reservation to delete.");
             }
             $this->deleteReservation($req->getPathAt(4));
-            $res->setMessage("Successfuly deleted resource.", 200); 
+            $res->setMessage("Successfuly deleted resource.", 200);
+            $result = null;
             break;
     }
+    return $result;
 } 
 
 
