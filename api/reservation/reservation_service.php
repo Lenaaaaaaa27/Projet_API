@@ -75,29 +75,25 @@ class ReservationService {
         if (!isset($body->end_date)) {
             throw new ValidationException("Please provide an end date for your reservation !");
         }
-        if (!isset($body->renter) || !is_numeric($body->renter)) {
-            throw new ValidationException("Please provide a renter for your reservation !");
-        }
-        if (!isset($body->apartment) || !is_numeric($body->apartment)) {
-            throw new ValidationException("Please indicate an apartment for your reservation !");
-        }
         if(strtotime($body->end_date) < strtotime($body->start_date) + (24 * 60 * 60)) {
             throw new ValueTakenException("A reservation cannot be made for less than one day.");
         }
+
+        $oldReservation = $this->repositoryReservation->getReservation(intval($id));
         
-        $existing = $this->repositoryReservation->getReservationsBetween($body->start_date, $body->start_date, $body->apartment,$id);
+        $existing = $this->repositoryReservation->getReservationByDate($body->start_date, $body->start_date, $oldReservation->apartment,$id);
 
         if($existing) {
             throw new ValueTakenException("the apartment is already booked during this period");
         } 
-
-        $this->repositoryUser->getUser($body->renter);
-        $apartment = $this->repositoryApartment->getApartment($body->apartment);
-
-        $body->price = $apartment->price * ((( strtotime($body->end_date) - strtotime($body->start_date)))/(24 * 60 * 60));
         
 
-        return $this->repositoryReservation->updateReservation($id, new ReservationModel($body->start_date, $body->end_date, $body->price, $body->renter, $body->apartment,null));
+        $result = $this->repositoryReservation->updateReservation($id, new ReservationModel($body->start_date, $body->end_date, $body->price, $body->renter, $body->apartment, null));
+
+        $apartment = $this->repositoryApartment->getApartment($result->apartment);
+
+        $result->price = $apartment->price * ((( strtotime($body->end_date) - strtotime($body->start_date)))/(24 * 60 * 60));
+        return $result;
     }
 
     public function deleteReservation(int $id): void { 

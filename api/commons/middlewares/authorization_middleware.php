@@ -11,7 +11,7 @@ function authorizationMiddleware(&$req, &$res){
     $authentificationRepository = new AuthentificationRepository();
     $url = $req->getUrl();
     $path = $req->getPathAt(2);
-    $user = $req->getPathAt(3);
+    $ressource = $req->getPathAt(3);
 
     if($url == "/index.php/auth" && $req->getMethod() == 'POST' || $url == "/index.php/restpatrop/user" && $req->getMethod() == 'POST'){
         
@@ -62,8 +62,7 @@ function authorizationMiddleware(&$req, &$res){
             throw new InternAccessException("Vous ne pouvez modifier ou ajouter un appartement");
         }
 
-        if($user == "user"){
-
+        if($ressource == "user"){
             if($req->getMethod() == 'PATCH'){
                 $idBody = $req->getBody()->id;
                 if(!is_numeric($idBody)){
@@ -85,13 +84,25 @@ function authorizationMiddleware(&$req, &$res){
             if($req->getMethod() == 'DELETE'){
                 $idUrl = $req->getPathAt(4);
                 if($idUrl != $id){
-                    throw new ForbiddenDeleteUser("Tu n'as pas le droit de supprimer un autre compte que le tien");
+                    throw new ForbiddenDeleteUser("Tu n'as pas le droit de supprimer un autre compte que le tiens");
+                }
+            }
+        }
+
+        if($ressource == "reservation"){
+            if($req->getMethod() == 'PATCH'){
+                $idBody = $req->getPathAt(4);
+                if($idBody != $id){
+                    throw new ForbiddenUpdateUser("Tu n'as pas le droit de modifier une autre reservation que la tienne");
+                }
+            }
+
+            if($req->getMethod() == 'DELETE'){
+                $idUrl = $req->getPathAt(4);
+                if($idUrl != $id){
+                    throw new ForbiddenDeleteUser("Tu n'as pas le droit de supprimer une autre reservation que la tienne");
                 }
             }
         }
     }
-    
-
-    
-
 }

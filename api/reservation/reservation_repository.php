@@ -135,14 +135,6 @@ class ReservationRepository {
             $values[] = $reservation->price;
             $query .= ",price = $".sizeof($values);
         }
-        if (isset($reservation->renter)) {
-            $values[] = $reservation->renter;
-            $query .= ",renter = $".sizeof($values);
-        }
-        if (isset($reservation->apartment)) {
-            $values[] = $reservation->apartment;
-            $query .= ",apartment = $".sizeof($values);
-        }
 
         $query .= " WHERE id = $id RETURNING id, start_date,end_date,price,renter,apartment";
 
@@ -157,6 +149,6 @@ class ReservationRepository {
 
         $modified = pg_fetch_assoc($result);
 
-        return new ReservationModel($modified['start_date'], $modified['end_date'], $modified['price'], $modified['renter'], $modified['apartment'],$modified['id']);
+        return new ReservationModel($modified['start_date'], $modified['end_date'], $modified['price'], $modified['renter'], $modified['apartment'], $modified['id']);
     }
 }
