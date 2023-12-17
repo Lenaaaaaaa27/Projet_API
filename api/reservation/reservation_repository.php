@@ -91,6 +91,18 @@ class ReservationRepository {
 
         return $reservations;
     }
+    
+    public function getReservationBy($attribute, $value): array{
+        $query = 'SELECT * FROM RESERVATION WHERE ' . $attribute . ' = $1';
+        
+        $res = $this->query($query, $value);
+        
+        $reservations = [];
+        while($row = pg_fetch_assoc($res))
+            $reservations[] = new ReservationModel($row['start_date'], $row['end_date'], $row['price'], $row['renter'], $row['apartment'],$row['id']);
+
+        return $reservations;
+    }
 
     public function deleteReservation(int $id): void {
         $query = "DELETE FROM RESERVATION WHERE id = $1";
