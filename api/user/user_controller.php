@@ -11,7 +11,8 @@ class UserController{
         $this->userService = new UserService;
     }
 
-    public function dispatch(Request $req, Response $res):void{
+    public function dispatch(Request $req, Response $res): mixed{
+        $result = NULL;
         switch($req->getMethod()) {
             case 'GET':
                 
@@ -19,12 +20,12 @@ class UserController{
                     try {
                         if(!is_numeric($req->getPathAt(4))) 
                             throw new BadRequestException("id is not valid!.");
-                       $res->setContent($this->userService->getUser(intval($req->getPathAt(4))));
+                       $result = $this->userService->getUser(intval($req->getPathAt(4)));
                     } catch (HTTPException $e) {
-                        $res->setContent($e->getMessage(), $e->getCode());
+                        $res->setMessage($e->getMessage(), $e->getCode());
                     }
                 } else{
-                    $res->setContent($result = $this->userService->getUsers());
+                    $result = $result = $this->userService->getUsers();
                 }
                 
                 break;
@@ -35,7 +36,7 @@ class UserController{
                 }
     
                 try {
-                    $res->setContent($result = $this->userService->createUser($req->getBody()));
+                    $result = $this->userService->createUser($req->getBody());
                 } catch (HTTPException $e) {
                     $res->setMessage($e->getMessage(), $e->getCode());
                 }
@@ -60,7 +61,7 @@ class UserController{
                 }
     
                 try {
-                    $res->setContent($this->userService->updateUser($req->getBody()));
+                    $result = $this->userService->updateUser($req->getBody());
                 } catch (HTTPException $e) {
                     $res->setMessage($e->getMessage(), $e->getCode());
                 }
@@ -86,5 +87,6 @@ class UserController{
                 exit();
             
         }
+        return $result;
     }
 }
