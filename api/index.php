@@ -44,6 +44,9 @@ function router(Request $req, Response $res): void {
                 case 'apartment' :
                     $controller = new ApartmentController();
                     break;
+                case 'reservation' :
+                    $controller = new ReservationController();
+                    break;
             }
 
             break;
