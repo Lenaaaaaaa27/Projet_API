@@ -13,14 +13,14 @@ class ApartmentController{
     }
 
     public function dispatch(Request $req, Response $res): void{
+        $result = NULL;
         switch($req->getMethod()){
             case 'GET':
-                    $this->getMethodController($req, $res);
+                    $result = $this->getMethodController($req, $res);
                 break;
 
             case 'POST':
                 $result = $this->service->createApartment($req->getBody());
-                $res->setContent($result);
                 break;
 
             case 'PATCH':
@@ -32,7 +32,6 @@ class ApartmentController{
                 else
                     $result = $this->service->modifyApartment($req->getPathAt(4), $req->getBody());
 
-                $res->setContent($result);
                 break;
 
             case 'DELETE':
@@ -45,25 +44,26 @@ class ApartmentController{
         }
     }
 
-    private function getMethodController(Request $req, Response $res): void{
+    private function getMethodController(Request $req, Response $res): mixed{
         switch($req->getPathAt(4)){
             case 'free':
-                $res->setContent($this->service->getFreeApartments());
+                $result = $this->service->getFreeApartments();
                 break;
 
             case 'owner':
                 if(!isset($_GET['id']))
                     throw new BadRequestException('Please provide ID of the owner as an argument.');
-                $res->setContent($this->service->getApartmentsByOwner($_GET['id']));
+                $result = $this->service->getApartmentsByOwner($_GET['id']);
                 break;
 
             case '':
-                $res->setContent($this->service->getApartments());
+                $result = $this->service->getApartments();
                 break;
 
             default:
-                $res->setContent($this->service->getApartment($req->getPathAt(4)));
+                $result = $this->service->getApartment($req->getPathAt(4));
         }
+        return $result;
     }
 }
 ?>
