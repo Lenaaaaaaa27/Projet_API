@@ -44,6 +44,9 @@ function router(Request $req, Response $res): void {
                 case 'apartment' :
                     $controller = new ApartmentController();
                     break;
+
+                default:
+                    throw new NotFoundException("Ce point d'entrée n'existe pas !");
             }
 
             break;
@@ -61,14 +64,14 @@ function router(Request $req, Response $res): void {
                 case 'apartment':
                     $controller = new ApartmentController();
                     break;
+                default:
+                    throw new NotFoundException("Ce point d'entrée n'existe pas !");
             }
 
             break;
         
         default:
-            // Si la ressource demandée n'existe pas, alors on renvoie une erreur 404
             throw new NotFoundException("Ce point d'entrée n'existe pas !");
-            break;
     }
 
         $controller->dispatch($req, $res);
