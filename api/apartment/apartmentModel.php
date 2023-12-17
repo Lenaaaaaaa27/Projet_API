@@ -7,8 +7,9 @@ class ApartmentModel{
     public $disponibility; //False if occupied, True if free
     public $price;
     public $owner; //Name of the owner
+    public $linkedReservations;
 
-    public function __construct($id, $address, $area, $owner, $capacity, $price, $disponibility){
+    public function __construct($id, $address, $area, $owner, $capacity, $price, $disponibility, $linkedReservations = NULL){
         $this->id = $id;
         $this->area = $area;
         $this->capacity = $capacity;
