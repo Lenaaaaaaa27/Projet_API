@@ -16,18 +16,9 @@ class ApartmentService{
         $this->repositoryReservation = new Reservationrepository();
     }
 
-    private function makeURLFromObject($object): string{
-        if(isset($object->mail)) $type = 'user';
-        if(isset($object->area)) $type = 'apartment';
-        if(isset($object->start_date)) $type = 'reservation';
-
-        $url = "http://localhost:8083/index.php/restpatrop/$type/$object->id";
-        return $url;
-    }
-
     private function getUserInfos($id): array{
         $owner = $this->userRepository->getUser($id);
-        $infos = ['id' => $id, 'mail' => $owner->mail, 'role' => $owner->role, 'url' => $this->makeURLFromObject($owner)];
+        $infos = ['id' => $id, 'mail' => $owner->mail, 'role' => $owner->role, 'url' => ''];
         return $infos;
     }
     
@@ -40,7 +31,7 @@ class ApartmentService{
                       'end_date' => $reservation->end_date,
                       'price' => $reservation->price,
                       'renter' => $reservation->renter,
-                      'url' => $this->makeURLFromObject($reservation)];
+                      'url' => ''];
         }
         return $infos;
     }
