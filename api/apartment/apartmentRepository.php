@@ -1,11 +1,9 @@
 <?php
 require_once 'apartmentModel.php';
-require_once 'user/user_repository.php';
 require_once 'commons/exceptions/repository_exceptions.php';
 
 class ApartmentRepository{
     private $db;
-    private $userRepository;
 
     public function __construct(){
         try{
@@ -15,34 +13,21 @@ class ApartmentRepository{
         }catch(Exception $e){
             throw new BDDException("Database connection failed :" . $e->getMessage());
         }
-
-        $this->userRepository = new UserRepository();
     }
 
     private function query($req, ...$args): PgSql\Result {
         $prepared = pg_prepare($this->db, "", $req);
-        if(!$prepared){
+        if(!$prepared)
             throw new BDDException(pg_last_error($this->db));
-        }
 
         if(preg_match("#^UPDATE#", $req))
             $args = $args[0];
 
         $res = pg_execute($this->db, "", $args);
-        if(!$res){
+        if(!$res)
             throw new BDDException(pg_last_error($this->db));
-        }
 
         return $res;
-    }
-
-    private function makeURLFromObject($object): string{
-        if(isset($object->mail)) $type = 'user';
-        if(isset($object->area)) $type = 'apartment';
-        if(isset($object->start_date)) $type = 'reservation';
-
-        $url = "http://localhost:8083/index.php/restpatrop/$type/$object->id";
-        return $url;
     }
 
     public function insertApartment(ApartmentModel $apart): ApartmentModel{
@@ -51,9 +36,6 @@ class ApartmentRepository{
 
         $res = $this->query($query, $apart->area, $apart->capacity, $apart->address, $apart->disponibility, $apart->price, $apart->owner);
         $created = pg_fetch_assoc($res);
-
-        $owner = $this->userRepository->getUser($created['owner']);
-        $created['owner'] = ['mail' => $owner->mail, 'role' => $owner->role, "url" => $this->makeURLFromObject($owner)];
 
         return new ApartmentModel($created['id'], $created['address'], $created['area'], $created['owner'], $created['capacity'], $created['price'], $created['disponibility']);
     }
@@ -68,11 +50,8 @@ class ApartmentRepository{
         $res = $this->query($query, $value);
         
         $apartments = [];
-        while($row = pg_fetch_assoc($res)){
-            $owner = $this->userRepository->getUser($row['owner']);
-            $row['owner'] = ['mail' => $owner->mail, 'role' => $owner->role, "url" => $this->makeURLFromObject($owner)];
+        while($row = pg_fetch_assoc($res))
             $apartments[] = new ApartmentModel($row['id'], $row['address'], $row['area'], $row['owner'], $row['capacity'], $row['price'], $row['disponibility']);
-        }
 
         return $apartments;
     }
@@ -81,9 +60,8 @@ class ApartmentRepository{
         $res = $this->getApartmentsBy('id', $id);
         $res = $res[0];
 
-        if($res == NULL){
+        if($res == NULL)
             throw new BDDNotFoundException("Apartment not found");
-        }
 
         return $res;
     }
@@ -98,11 +76,8 @@ class ApartmentRepository{
         $res = $this->query($query);
 
         $apartments = [];
-        while($row = pg_fetch_assoc($res)){
-            $owner = $this->userRepository->getUser($row['owner']);
-            $row['owner'] = ['mail' => $owner->mail, 'role' => $owner->role, "url" => $this->makeURLFromObject($owner)];
+        while($row = pg_fetch_assoc($res))
             $apartments[] = new ApartmentModel($row['id'], $row['address'], $row['area'], $row['owner'], $row['capacity'], $row['price'], $row['disponibility']);
-        }
 
         return $apartments;
     }
@@ -155,9 +130,6 @@ class ApartmentRepository{
 
         $res = pg_fetch_assoc($res);
 
-        $owner = $this->userRepository->getUser($res['owner']);
-        $res['owner'] = ['mail' => $owner->mail, 'role' => $owner->role, "url" => $this->makeURLFromObject($owner)];
-
         return new ApartmentModel($res['id'], $res['address'], $res['area'], $res['owner'], $res['capacity'], $res['price'], $res['disponibility']);
     }
 
@@ -165,12 +137,11 @@ class ApartmentRepository{
         $query = 'DELETE FROM APARTMENT WHERE id = $1';
         $res = $this->query($query, $id);
 
-        if(!$res){
+        if(!$res)
             throw new BDDException(pg_last_error($this->db));
-        }
-        if(pg_affected_rows($res) == 0){
+
+        if(pg_affected_rows($res) == 0)
             throw new BDDNotFoundException('Apartment ID ' . $id . ' was not found.');
-        }
     }
 }
 ?>

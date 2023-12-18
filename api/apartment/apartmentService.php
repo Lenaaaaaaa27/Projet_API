@@ -1,35 +1,84 @@
 <?php
 require_once 'apartmentRepository.php';
 require_once 'apartmentModel.php';
+include_once 'reservation/reservation_repository.php';
+require_once 'user/user_repository.php';
 require_once 'commons/exceptions/service_exceptions.php';
 
 class ApartmentService{
-    private $repository;
+    private $apartRepository;
+    private $userRepository;
+    private $repositoryReservation;
 
     public function __construct(){
-        $this->repository = new ApartmentRepository();
+        $this->apartRepository = new ApartmentRepository();
+        $this->userRepository = new UserRepository();
+        $this->repositoryReservation = new Reservationrepository();
+    }
+
+    private function getUserInfos($id): array{
+        $owner = $this->userRepository->getUser($id);
+        $infos = ['id' => $id, 'mail' => $owner->mail, 'role' => $owner->role, 'url' => ''];
+        return $infos;
+    }
+    
+    private function getLinkedReservationsInfos($apartID): array{
+        $linkedReservations = $this->repositoryReservation->getReservationBy('apartment', $apartID);
+        $infos = [];
+        foreach($linkedReservations as $reservation){
+            $infos[] = ['id' => $reservation->id, 
+                      'start_date' => $reservation->start_date,
+                      'end_date' => $reservation->end_date,
+                      'price' => $reservation->price,
+                      'renter' => $reservation->renter,
+                      'url' => ''];
+        }
+        return $infos;
     }
 
     public function getApartments(): array{
-        return $this->repository->getApartments();
+        $res = $this->apartRepository->getApartments();
+
+        foreach($res as $value){
+            $value->owner = $this->getUserInfos($value->owner);
+            $value->linkedReservations = $this->getLinkedReservationsInfos($value->id);
+        }
+        return $res;
     }
 
     public function getApartment($id): ApartmentModel {
-        return $this->repository->getApartment($id);
+        $res = $this->apartRepository->getApartment($id);
+        $res->owner = $this->getUserInfos($res->owner);
+        $res->linkedReservations = $this->getLinkedReservationsInfos($res->id);
+        return $res;
     }
 
     public function getFreeApartments(): array{
-        return $this->repository->getApartmentsBy("disponibility","TRUE");
+        $res = $this->apartRepository->getApartmentsBy("disponibility","TRUE");
+        
+        foreach($res as $value){
+            $value->owner = $this->getUserInfos($value->owner);
+            $value->linkedReservations = $this->getLinkedReservationsInfos($value->id);
+        }
+        
+        return $res;
     }
 
     public function getApartmentsByOwner($id): array{
-        return $this->repository->getApartmentsBy("owner", $id);
+        $res = $this->apartRepository->getApartmentsBy("owner", $id);
+        
+        foreach($res as $value){
+            $value->owner = $this->getUserInfos($value->owner);
+            $value->linkedReservations = $this->getLinkedReservationsInfos($value->id);
+        }
+        
+        return $res;
     }
 
     public function createApartment(stdClass $body): ApartmentModel {
         $tempFlat = new ApartmentModel(NULL, NULL, NULL, NULL, NULL, NULL, NULL);
         foreach($tempFlat as $key => $value){
-            if($key == "id") continue;
+            if($key == "id" || $key == "linkedReservations") continue;
             if(!isset($body->$key))
                 throw new ValidationException('Impossible creation : property ' . $key . ' is not provided.');
 
@@ -37,16 +86,20 @@ class ApartmentService{
         }
         
         //We check then if this apartment already exists in the database
-        $existing = $this->repository->getApartmentsBy("address", $tempFlat->address);
+        $existing = $this->apartRepository->getApartmentsBy("address", $tempFlat->address);
 
         if($existing != NULL)
             throw new ValueTakenException("Apartment with address '$tempFlat->address' already exists.");
 
-        return $this->repository->insertApartment($tempFlat);
+        $res = $this->apartRepository->insertApartment($tempFlat);
+        $res->owner = $this->getUserInfos($res->owner);
+        $res->linkedReservations = $this->getLinkedReservationsInfos($res->id);
+
+        return $res;
     }
 
     public function deleteApartment($id): void{
-        $this->repository->deleteApartment($id);
+        $this->apartRepository->deleteApartment($id);
     }
 
     public function modifyApartment($id, stdClass $body): ApartmentModel{
@@ -66,11 +119,19 @@ class ApartmentService{
             $tempFlat->$key = $body->$key;
         }
 
-        return $this->repository->updateApartment($tempFlat);
+        $res = $this->apartRepository->updateApartment($tempFlat);
+        $res->owner = $this->getUserInfos($res->owner);
+        $res->linkedReservations = $this->getLinkedReservationsInfos($res->id);
+        
+        return $res;
     }
 
     public function switchDisponibityOn($id): ApartmentModel{
-        return $this->repository->switchDisponibility($id);
+        $res = $this->apartRepository->switchDisponibility($id);
+        $res->owner = $this->getUserInfos($res->owner);
+        $res->linkedReservations = $this->getLinkedReservationsInfos($res->id);
+        
+        return $res;
     }
 }
 ?>

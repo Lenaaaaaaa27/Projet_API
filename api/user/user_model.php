@@ -28,7 +28,19 @@ class UserModel{
 
     public $token;
 
-    public function __construct($mail, $password, $role, $id = NULL, $token = NULL){
+    /**
+     *  @var array
+     */
+
+    public $ownedApartments;
+
+    /**
+     *  @var array
+     */
+
+    public $madeReservations;
+
+    public function __construct($mail, $password, $role, $id = NULL, $token = NULL, $ownedApartments = NULL, $madeReservations = NULL){
         $this->mail = $mail;
         $this->password = $password;
         $this->role = $role;

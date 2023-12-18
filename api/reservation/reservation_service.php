@@ -15,35 +15,49 @@ class ReservationService {
         $this->repositoryReservation = new Reservationrepository();
         $this->repositoryUser = new UserRepository();
         $this->repositoryApartment = new ApartmentRepository();
-
     }
 
+    private function getUserInfos($id): array{
+        $renter = $this->repositoryUser->getUser($id);
+        $infos = ['id' => $id, 'mail' => $renter->mail, 'role' => $renter->role, 'url' => ''];
+        return $infos;
+    }
+
+    private function getApartInfos($id): array{
+        $apartment = $this->repositoryApartment->getApartment($id);
+        $infos = ['id' => $id, 
+                  'address' => $apartment->address,
+                  'area' => $apartment->area,
+                  'capacity' => $apartment->capacity,
+                  'price' => $apartment->price,
+                  'owner' => $apartment->owner,
+                  'url' => ''];
+        return $infos;
+    }
 
     function getReservations() : array {
-
-        $reservations = $this->repositoryReservation->getReservations();
-        foreach($reservations as $reservation) {
-            $reservation->apartment = $this->repositoryApartment->getApartmentsBy("id",$reservation->apartment);
-            $reservation->renter = $this->repositoryUser->getUser($reservation->renter);
+        $res = $this->repositoryReservation->getReservations();
+        foreach($res as $value){
+            $value->renter = $this->getUserInfos($value->renter);
+            $value->apartment = $this->getApartInfos($value->apartment);
         }
-        return $reservations;
+        return $res;
     }
 
     function getReservationsBetween($start_date, $end_date) : array {
-        $reservations = $this->repositoryReservation->getReservationsBetween($start_date, $end_date);
-        foreach($reservations as $reservation) {
-            $reservation->apartment = $this->repositoryApartment->getApartmentsBy("id",$reservation->apartment);
-            $reservation->renter = $this->repositoryUser->getUser($reservation->renter);
+        $res = $this->repositoryReservation->getReservationsBetween($start_date, $end_date);
+        foreach($res as $value){
+            $value->renter = $this->getUserInfos($value->renter);
+            $value->apartment = $this->getApartInfos($value->apartment);
         }
-        return $reservations;
+        return $res;
     }
 
     function getReservation(int $id) : ReservationModel {
-        
-        $result = $this->repositoryReservation->getReservation($id);
-        $result->apartment = $this->repositoryApartment->getApartmentsBy("id",$result->apartment);
-        $result->renter = $this->repositoryUser->getUser($result->renter);
-        return $result;
+        $res = $this->repositoryReservation->getReservation($id);
+        $res->renter = $this->getUserInfos($res->renter);
+        $res->apartment = $this->getApartInfos($res->apartment);
+        return $res;
     }
 
     function createReservation(stdClass $body) : ReservationModel {
@@ -72,15 +86,14 @@ class ReservationService {
             throw new ValueTakenException("the apartment is already booked during this period");
         } 
 
-        $user = $this->repositoryUser->getUser(intval($body->renter));
         $apartment = $this->repositoryApartment->getApartment($body->apartment);
 
-       $body->price = $apartment->price * ((( strtotime($body->end_date) - strtotime($body->start_date)))/(24 * 60 * 60));
-        
+        $body->price = $apartment->price * ((( strtotime($body->end_date) - strtotime($body->start_date)))/(24 * 60 * 60));
+
         $reservation =  $this->repositoryReservation->createReservation(new ReservationModel($body->start_date, $body->end_date, $body->price, $body->renter, $body->apartment,NULL));
-        $reservation->renter = $user;
-        $reservation->apartment = $apartment;
-        return $reservation;
+        $res->renter = $this->getUserInfos($res->renter);
+        $res->apartment = $this->getApartInfos($res->apartment);
+        return $res;
     }
 
     public function updateReservation($id, stdClass $body) : ReservationModel {
@@ -101,15 +114,16 @@ class ReservationService {
 
         if($existing) {
             throw new ValueTakenException("the apartment is already booked during this period");
-        } 
-        
+        }
 
-        $result = $this->repositoryReservation->updateReservation($id, new ReservationModel($body->start_date, $body->end_date, $body->price, $body->renter, $body->apartment, null));
+        $res = $this->repositoryReservation->updateReservation($id, new ReservationModel($body->start_date, $body->end_date, $body->price, $body->renter, $body->apartment, null));
 
-        $apartment = $this->repositoryApartment->getApartment($result->apartment);
+        $apartment = $this->repositoryApartment->getApartment($res->apartment);
 
-        $result->price = $apartment->price * ((( strtotime($body->end_date) - strtotime($body->start_date)))/(24 * 60 * 60));
-        return $result;
+        $res->price = $apartment->price * ((( strtotime($body->end_date) - strtotime($body->start_date)))/(24 * 60 * 60));
+        $res->renter = $this->getUserInfos($res->renter);
+        $res->apartment = $this->getApartInfos($res->apartment);
+        return $res;
     }
 
     public function deleteReservation(int $id): void { 
