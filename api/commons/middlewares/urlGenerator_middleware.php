@@ -3,6 +3,7 @@ require_once 'commons/request.php';
 require_once 'commons/response.php';
 
 function urlGeneratorMiddleware(Request $req, Response $res, $content){
+
     if($content == NULL || $req->getMethod() == 'DELETE') return; //Get out if you don't have content !!
 
     $testingObject = is_array($content) ? $content[0] : $content; //We need a non-array object for the next tests
@@ -30,7 +31,27 @@ function urlGeneratorMiddleware(Request $req, Response $res, $content){
         generateAttributeLink($content, $secondAttr, $req);
     }
 
+    if($req->getPathAt(3) == 'user')
+        unsetUsermodel($content, $req);
+
     $res->setContent($content); //Then we set the content
+}
+
+function unsetUsermodel(mixed $content, Request $req):mixed{
+    $method = $req->getMethod();
+    if($req->getPathAt(4) != NULL && $method == "GET" || $method == "POST" || $method = "UPDATE"){
+        unset($content->password);
+        unset($content->token);
+    }
+    if($req->getPathAt(4) == NULL && $method = 'GET'){
+        foreach($content as $user){
+            unset($user->password);
+            unset($user->token);
+        }
+    }
+
+
+    return $content;
 }
 
 function makeURLFromArray($arr, Request $req): string{ //Create the URL from the array received 
