@@ -21,16 +21,29 @@ class ReservationService {
 
     function getReservations() : array {
 
-        return $this->repositoryReservation->getReservations();
+        $reservations = $this->repositoryReservation->getReservations();
+        foreach($reservations as $reservation) {
+            $reservation->apartment = $this->repositoryApartment->getApartmentsBy("id",$reservation->apartment);
+            $reservation->renter = $this->repositoryUser->getUser($reservation->renter);
+        }
+        return $reservations;
     }
 
     function getReservationsBetween($start_date, $end_date) : array {
-        return $this->repositoryReservation->getReservationsBetween($start_date, $end_date);
+        $reservations = $this->repositoryReservation->getReservationsBetween($start_date, $end_date);
+        foreach($reservations as $reservation) {
+            $reservation->apartment = $this->repositoryApartment->getApartmentsBy("id",$reservation->apartment);
+            $reservation->renter = $this->repositoryUser->getUser($reservation->renter);
+        }
+        return $reservations;
     }
 
     function getReservation(int $id) : ReservationModel {
         
-        return $this->repositoryReservation->getReservation($id);
+        $result = $this->repositoryReservation->getReservation($id);
+        $result->apartment = $this->repositoryApartment->getApartmentsBy("id",$result->apartment);
+        $result->renter = $this->repositoryUser->getUser($result->renter);
+        return $result;
     }
 
     function createReservation(stdClass $body) : ReservationModel {
@@ -59,12 +72,15 @@ class ReservationService {
             throw new ValueTakenException("the apartment is already booked during this period");
         } 
 
-        $this->repositoryUser->getUser($body->renter);
+        $user = $this->repositoryUser->getUser(intval($body->renter));
         $apartment = $this->repositoryApartment->getApartment($body->apartment);
 
        $body->price = $apartment->price * ((( strtotime($body->end_date) - strtotime($body->start_date)))/(24 * 60 * 60));
         
-        return $this->repositoryReservation->createReservation(new ReservationModel($body->start_date, $body->end_date, $body->price, $body->renter, $body->apartment,NULL));
+        $reservation =  $this->repositoryReservation->createReservation(new ReservationModel($body->start_date, $body->end_date, $body->price, $body->renter, $body->apartment,NULL));
+        $reservation->renter = $user;
+        $reservation->apartment = $apartment;
+        return $reservation;
     }
 
     public function updateReservation($id, stdClass $body) : ReservationModel {
