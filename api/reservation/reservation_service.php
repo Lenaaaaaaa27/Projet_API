@@ -88,12 +88,17 @@ class ReservationService {
 
         $apartment = $this->repositoryApartment->getApartment($body->apartment);
 
+
+        if($apartment->disponibility === "f") {
+            throw new ValueTakenException("the apartment is already unavailable");
+        }
+
         $body->price = $apartment->price * ((( strtotime($body->end_date) - strtotime($body->start_date)))/(24 * 60 * 60));
 
         $reservation =  $this->repositoryReservation->createReservation(new ReservationModel($body->start_date, $body->end_date, $body->price, $body->renter, $body->apartment,NULL));
-        $res->renter = $this->getUserInfos($res->renter);
-        $res->apartment = $this->getApartInfos($res->apartment);
-        return $res;
+        $reservation->renter = $this->getUserInfos($reservation->renter);
+        $reservation->apartment = $this->getApartInfos($reservation->apartment);
+        return $reservation;
     }
 
     public function updateReservation($id, stdClass $body) : ReservationModel {
@@ -120,13 +125,19 @@ class ReservationService {
 
         $apartment = $this->repositoryApartment->getApartment($res->apartment);
 
+        if($apartment->disponibility === "f") {
+            throw new ValueTakenException("the apartment is already unavailable");
+        }
+
         $res->price = $apartment->price * ((( strtotime($body->end_date) - strtotime($body->start_date)))/(24 * 60 * 60));
         $res->renter = $this->getUserInfos($res->renter);
         $res->apartment = $this->getApartInfos($res->apartment);
         return $res;
     }
 
-    public function deleteReservation(int $id): void { 
+    public function deleteReservation(int $id,int $userId): void { 
+        $reservation = $this->repositoryReservation->getReservation($id);
+
         $this->repositoryReservation->deleteReservation($id);
     }
 

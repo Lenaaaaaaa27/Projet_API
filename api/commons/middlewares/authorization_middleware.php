@@ -91,7 +91,7 @@ function authorizationMiddleware(&$req, &$res){
 
         if($ressource == "reservation"){
             if($req->getMethod() == 'PATCH'){
-                $idBody = $req->getPathAt(4);
+                $idBody = $req->getBody(4)->renter;
                 if($idBody != $id){
                     throw new ForbiddenUpdateUser("Tu n'as pas le droit de modifier une autre reservation que la tienne");
                 }
