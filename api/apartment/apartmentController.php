@@ -12,7 +12,7 @@ class ApartmentController{
         $this->service = new ApartmentService();
     }
 
-    public function dispatch(Request $req, Response $res): void{
+    public function dispatch(Request $req, Response $res): mixed{
         $result = NULL;
         switch($req->getMethod()){
             case 'GET':
@@ -42,6 +42,7 @@ class ApartmentController{
                 $res->setMessage('Successfully deleted Apartment of ID ' . $req->getPathAt(4), 200);
                 break;
         }
+        return $result;
     }
 
     private function getMethodController(Request $req, Response $res): mixed{

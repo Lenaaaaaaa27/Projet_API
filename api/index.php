@@ -6,6 +6,7 @@ include_once './commons/request.php';
 include_once './commons/response.php';
 include_once './commons/middlewares/authorization_middleware.php';
 include_once './commons/middlewares/json_middleware.php';
+include_once './commons/middlewares/urlGenerator_middleware.php';
 include_once './commons/exceptions/controller_exceptions.php';
 include_once './commons/exceptions/authorization_exceptions.php';
 include_once './user/user_controller.php';
@@ -22,7 +23,7 @@ class GeneralController {
     }
 }
 
-function router(Request $req, Response $res): void {
+function router(Request $req, Response $res): mixed {
     $controller = null;
     switch($req->getPathAt(2)) {
         case(null):
@@ -71,7 +72,7 @@ function router(Request $req, Response $res): void {
             break;
     }
 
-        $controller->dispatch($req, $res);
+        return $controller->dispatch($req, $res);
 }
 
 // On instancie req et res
@@ -84,7 +85,8 @@ try {
     json_middleware($req, $res);
     authorizationMiddleware($req, $res);
     
-    router($req, $res);
+    $result = router($req, $res);
+    urlGeneratorMiddleware($req, $res, $result);
 } catch (NotFoundException | EntityNotFoundException | BDDNotFoundException $e) {
     $res->setMessage($e->getMessage(), 404);
 } catch (ValidationException | ValueTakenException | BadRequestException | EmailAlreadyExists | FailConnexionAccount $e) {
