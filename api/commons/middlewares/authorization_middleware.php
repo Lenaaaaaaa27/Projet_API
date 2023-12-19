@@ -98,10 +98,7 @@ function authorizationMiddleware(&$req, &$res){
             }
 
             if($req->getMethod() == 'DELETE'){
-                $idUrl = $req->getPathAt(4);
-                if($idUrl != $id){
-                    throw new ForbiddenDeleteUser("Tu n'as pas le droit de supprimer une autre reservation que la tienne");
-                }
+                $req->setBody($id);
             }
         }
     }

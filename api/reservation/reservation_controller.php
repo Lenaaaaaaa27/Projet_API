@@ -50,7 +50,7 @@ function dispatch(Request $req, Response $res): mixed {
             if ($req->getPathAt(4) === "" || !is_numeric($req->getPathAt(4))) {
                 throw new BadRequestException("Please provide an ID for the reservation to delete.");
             }
-            $this->deleteReservation($req->getPathAt(4));
+            $this->deleteReservation($req->getPathAt(4),$req->getBody());
             $res->setMessage("Successfuly deleted resource.", 200);
             $result = null;
             break;
@@ -79,8 +79,8 @@ function dispatch(Request $req, Response $res): mixed {
         return $result;
     }
 
-    function deleteReservation(int $id): void {
-        $this->service->deleteReservation($id);
+    function deleteReservation(int $id,int $userId): void {
+        $this->service->deleteReservation($id, $userId);
     }
 
     function patchReservation(int $id, stdClass $body): ReservationModel {

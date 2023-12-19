@@ -137,7 +137,9 @@ class ReservationService {
 
     public function deleteReservation(int $id,int $userId): void { 
         $reservation = $this->repositoryReservation->getReservation($id);
-
+        if( $reservation->renter != $userId) {
+            throw new AccessException("You have no right to delete this resource!");
+        }
         $this->repositoryReservation->deleteReservation($id);
     }
 
