@@ -35,8 +35,11 @@ class ReservationService {
         return $infos;
     }
 
-    function getReservations() : array {
-        $res = $this->repositoryReservation->getReservations();
+    function getReservations($userId) : array {
+
+
+            $res = $this->repositoryReservation->getReservations($userId);
+
         foreach($res as $value){
             $value->renter = $this->getUserInfos($value->renter);
             $value->apartment = $this->getApartInfos($value->apartment);
@@ -44,8 +47,15 @@ class ReservationService {
         return $res;
     }
 
-    function getReservationsBetween($start_date, $end_date) : array {
-        $res = $this->repositoryReservation->getReservationsBetween($start_date, $end_date);
+    function getReservationsBetween($start_date, $end_date, $userId) : array {
+
+        if(empty($userId)) {
+           
+            $res = $this->repositoryReservation->getReservationsBetween($start_date, $end_date);
+        } else {
+            $res = $this->repositoryReservation->getReservationsBetween($start_date, $end_date, $userId);
+        }
+
         foreach($res as $value){
             $value->renter = $this->getUserInfos($value->renter);
             $value->apartment = $this->getApartInfos($value->apartment);
@@ -53,8 +63,16 @@ class ReservationService {
         return $res;
     }
 
-    function getReservation(int $id) : ReservationModel {
+    function getReservation(int $id, $userId = NULL) : ReservationModel {
+
+
+
         $res = $this->repositoryReservation->getReservation($id);
+
+        if($userId != NULL && $userId != $res->renter) {
+            throw new AccessException("You have no right to get this resource!");
+        }
+
         $res->renter = $this->getUserInfos($res->renter);
         $res->apartment = $this->getApartInfos($res->apartment);
         return $res;

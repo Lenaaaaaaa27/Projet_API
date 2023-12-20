@@ -107,6 +107,10 @@ function authorizationMiddleware(&$req, &$res){
             if($req->getMethod() == 'DELETE'){
                 $req->setBody($id);
             }
+
+            if($req->getMethod() == 'GET'){
+                $req->setBody($id);
+            }
         }
     }
 }
