@@ -112,6 +112,9 @@ class ReservationService {
         if(strtotime($body->end_date) < strtotime($body->start_date) + (24 * 60 * 60)) {
             throw new ValueTakenException("A reservation cannot be made for less than one day.");
         }
+        if(strtotime($body->renter)) {
+            throw new ValueTakenException("Please provide an renter id for your reservation !");
+        }
 
         $oldReservation = $this->repositoryReservation->getReservation(intval($id));
         
@@ -119,6 +122,9 @@ class ReservationService {
 
         if($existing) {
             throw new ValueTakenException("the apartment is already booked during this period");
+        }
+        if($body->renter != $oldReservation->renter) {
+            throw new AccessException("You have no right to update this resource!");
         }
 
         $res = $this->repositoryReservation->updateReservation($id, new ReservationModel($body->start_date, $body->end_date, $body->price, $body->renter, $body->apartment, null));
