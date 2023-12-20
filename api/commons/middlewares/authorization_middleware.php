@@ -48,28 +48,28 @@ function authorizationMiddleware(&$req, &$res){
     // Pour accéder au back office
 
     if($role != "3" && $path == "back_office"){
-        throw new AdminAccessException("Vous n'avez pas l'acces au back office");
+        throw new AdminAccessException("You cant't acces to the back office.");
     }
 
     // Pour acceder à l'appli : que les proprio qui peuvent rendre dispo/indispo leurs appart (role : 1)
 
     if($userAgent == "restpatrop"){
         if($role != "1" && $path == "restpatrop"){
-            throw new OwnerAccessException("Vous n'avez pas l'accès à l'application respatrop");
+            throw new OwnerAccessException("You can't access to the application.");
         }
     }elseif($path == "restpatrop"){
         if($role != 2 && ($req->getMethod() == 'PATCH' || $req->getMethod() == 'POST') && $req->getPathAt(3) == "apartment"){
-            throw new InternAccessException("Vous ne pouvez modifier ou ajouter un appartement");
+            throw new InternAccessException("You can't update or add an apartment");
         }
 
         if($ressource == "user"){
             if($req->getMethod() == 'PATCH'){
                 $idBody = $req->getBody()->id;
                 if(!is_numeric($idBody)){
-                    throw new ForbiddenUpdateUser("L'id est invalide");
+                    throw new ForbiddenUpdateUser("Invalid id.");
                 }
                 if($idBody != $id){
-                    throw new ForbiddenUpdateUser("Tu n'as pas le droit de modifier un autre compte que le tien");
+                    throw new ForbiddenUpdateUser("You can't modify another account than yours");
                 }
             }
 
@@ -84,7 +84,7 @@ function authorizationMiddleware(&$req, &$res){
             if($req->getMethod() == 'DELETE'){
                 $idUrl = $req->getPathAt(4);
                 if($idUrl != $id){
-                    throw new ForbiddenDeleteUser("Tu n'as pas le droit de supprimer un autre compte que le tiens");
+                    throw new ForbiddenDeleteUser("You can't delete another account than yours");
                 }
             }
         }
@@ -93,7 +93,7 @@ function authorizationMiddleware(&$req, &$res){
             if($req->getMethod() == 'PATCH'){
                 $idBody = $req->getBody(4)->renter;
                 if($idBody != $id){
-                    throw new ForbiddenUpdateUser("Tu n'as pas le droit de modifier une autre reservation que la tienne");
+                    throw new ForbiddenUpdateUser("You can't modify another reservation than yours.");
                 }
             }
 
