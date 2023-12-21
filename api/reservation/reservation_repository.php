@@ -21,7 +21,6 @@ class ReservationRepository {
         $prepared = pg_prepare($this->connection, "", $query);
         
         if (!$prepared) {
-            var_dump(pg_last_error($this->connection));
             throw new BDDException(pg_last_error($this->connection));
         }
         
@@ -34,8 +33,15 @@ class ReservationRepository {
         return $result;
     }
 
-    public function getReservations(): array {
-        $query =  "SELECT * FROM RESERVATION ORDER BY id DESC";
+    public function getReservations($userId = NULL): array {
+        $query =  "SELECT * FROM RESERVATION ";
+
+        if($userId != NULL) {
+            $query .= " WHERE renter = $userId";
+        }
+
+        $query .= " ORDER BY id DESC";
+
         $result = $this->query($query);
 
         $reservations = [];
@@ -77,12 +83,20 @@ class ReservationRepository {
         return pg_fetch_assoc($result);
     }
 
-    public function getReservationsBetween(string $start_date, string $end_date): mixed {
+    public function getReservationsBetween(string $start_date, string $end_date, $userId = NULL): mixed {
+        $params = [];
         $query = "SELECT * FROM RESERVATION WHERE 
-        start_date BETWEEN $1 AND $2
-        AND end_date BETWEEN $1 AND $2";
-        
-        $result = $this->query($query, $start_date, $end_date);
+        (start_date BETWEEN $1 AND $2
+        AND end_date BETWEEN $1 AND $2) ";
+        $params[] = $start_date;
+        $params[] = $end_date;
+
+        if($userId != NULL) {
+            $query .= " AND renter = $3";
+             $params[] = intval($userId);
+        }
+
+        $result = $this->query($query, ...$params);
 
         $reservations = [];
         while ($row = pg_fetch_assoc($result)) {
