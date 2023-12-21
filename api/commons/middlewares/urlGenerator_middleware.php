@@ -50,6 +50,10 @@ function unsetUsermodel(mixed $content, Request $req):mixed{
         }
     }
 
+    if($method = 'POST'){
+        unset($content->ownedApartments);
+        unset($content->madeReservations);
+    }
 
     return $content;
 }

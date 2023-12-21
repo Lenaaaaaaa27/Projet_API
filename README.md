@@ -1,5 +1,7 @@
 # Projet_API
 
+Dans ce fichier vous pouvez recuperer le fichier restpatrop.json pour avoir toutes les requetes pour tester l'api sur insomnia.
+
 Roles :
     - Client (utilisateur classique) : 0
     - Proprio : 1
